@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="stylesheets/testePatient.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <title>NeuroPsi</title>
+</head>
+<body>
+    <nav class="navBar">
+        <span class="openSlide">
+            <a href="#" onClick="openSlideMenu()">
+                <svg width="30" height="30">
+                    <path d="M 0,5 30,5" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,14 30,14" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,23 30,23" stroke="#fff" stroke-width="5"/>
+                </svg>
+            </a>
+        </span>
+        <ul class="navBar-nav">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Serviços</a></li>
+            <li><a href="#">Contactos</a></li>
+        </ul>
+    </nav>
+    <nav id="sideMenu" class="navSidebar">
+        <ul>
+            <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
+            <a href="testePatient.html">Testes</a>
+            <a href="#">Consultas</a>
+        </ul>
+    </nav>
+    <section id="draw">
+        <canvas height= "500" width="800" id="canvas" style="border: medium; border-color: #00F; border-style: solid"></canvas>
+        <a href="#" class="btn btn-white btn-animate">Começar</a>
+        </form>
+        <form id="reyControls">
+            <input id="recordBtn" type="button" value="Record">
+            <input id="nextBtn" type="button" value="Começar" onclick="startRey()">
+            <input id="playBtn" type="button" value="Play">
+            <input id="pauseBtn" type="button" value="Pause">
+            <input id="clearBtn" type="button" value="Clear">
+        </form>
+        
+    </section>
+</body>
+    <script src="javascripts/testePatient.js"></script>
+    <script src="javascripts/RecordableDrawing.js"></script>
+    <script src="javascripts/drawingSerializer.js"></script>
+</html>

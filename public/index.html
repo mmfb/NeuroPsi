@@ -1,0 +1,140 @@
+<html class="ui-mobile">
+    <head><base href="http://ramkulkarni.com/temp/2012-10-03/">
+    <script type="text/javascript" src="javascripts/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="js/lib/jquery.mobile-1.1.0.js"></script>
+    <script type="text/javascript" src="javascripts/RecordableDrawing.js"></script>
+    
+    <script type="text/javascript">
+        
+        playbackInterruptCommand = "";
+        
+        $(document).bind("pageinit", function()
+        {
+            $("#pauseBtn").hide();
+            $("#playBtn").hide();
+            drawing = new RecordableDrawing("canvas1");
+            
+            $("#recordBtn").click(function(){
+                var btnTxt = $("#recordBtn .ui-btn-text").text();
+                if (btnTxt == 'Stop')
+                    stopRecording();
+                else
+                    startRecording();
+            });
+            
+            $("#playBtn").click(function(){
+                var btnTxt = $("#playBtn .ui-btn-text").text();
+                if (btnTxt == 'Stop')
+                    stopPlayback();
+                else
+                    startPlayback();			
+            });
+            
+            $("#pauseBtn").click(function(){
+                var btnTxt = $("#pauseBtn .ui-btn-text").text();
+                if (btnTxt == 'Pause')
+                {
+                    pausePlayback();
+                } else if (btnTxt == 'Resume')
+                {
+                    resumePlayback();
+                }
+            });
+            
+            $("#clearBtn").click(function(){
+                drawing.clearCanvas();			
+            });
+        });
+        
+        function stopRecording()
+        {
+            $("#recordBtn .ui-btn-text").text("Record");
+            $("#playBtn").show();
+            $("#clearBtn").show();
+            $("#pauseBtn").hide();
+            
+            drawing.stopRecording();
+        }
+        
+        function startRecording()
+        {
+            $("#recordBtn .ui-btn-text").text("Stop");
+            $("#playBtn").hide();
+            $("#pauseBtn").hide();
+            $("#clearBtn").hide();
+            
+            drawing.startRecording();
+        }
+        
+        function stopPlayback()
+        {
+            playbackInterruptCommand = "stop";		
+        }
+        
+        function startPlayback()
+        {
+            drawing.playRecording(function() {
+                //on playback start
+                $("#playBtn .ui-btn-text").text("Stop");
+                $("#recordBtn").hide();
+                $("#pauseBtn").show();
+                $("#clearBtn").hide();
+    
+                playbackInterruptCommand = "";
+            }, function(){
+                //on playback end
+                $("#playBtn .ui-btn-text").text("Play");
+                $("#playBtn").show();
+                $("#recordBtn").show();
+                $("#clearBtn").show();
+                $("#pauseBtn").hide();
+            }, function() {
+                //on pause
+                $("#pauseBtn .ui-btn-text").text("Resume");
+                $("#recordBtn").hide();
+                $("#playBtn").hide();
+                $("#clearBtn").hide();
+                
+            }, function() {
+                //status callback
+                return playbackInterruptCommand;
+            });
+        }
+        
+        function pausePlayback()
+        {
+            playbackInterruptCommand = "pause";
+        }
+        
+        function resumePlayback()
+        {
+            playbackInterruptCommand = "";
+            drawing.resumePlayback(function(){
+                $("#pauseBtn .ui-btn-text").text("Pause");
+                $("#pauseBtn").show();
+                $("#recordBtn").hide();
+                $("#clearBtn").hide();
+                $("#playBtn").show();
+            });
+        }
+    </script>
+    
+    <title></title></head><body class="ui-mobile-viewport ui-overlay-c"><div data-role="page" data-url="/temp/2012-10-03/" tabindex="0" class="ui-page ui-body-c ui-page-active" style="min-height: 674px;"><table>
+        <tbody><tr>
+            <td>
+                <canvas id="canvas1" width="500" height="400" style="border: medium solid rgb(0, 0, 255);">
+                </canvas>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="#" data-role="button" data-inline="true" id="recordBtn" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-inline ui-shadow ui-btn-corner-all"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Record</span></span></a>
+                <a href="#" data-role="button" data-inline="true" id="playBtn" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-inline ui-shadow ui-btn-corner-all" style="display: none;"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Play</span></span></a>
+                <a href="#" data-role="button" data-inline="true" id="pauseBtn" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-inline ui-shadow ui-btn-corner-all" style="display: none;"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Pause</span></span></a>
+                <a href="#" data-role="button" data-inline="true" id="clearBtn" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" data-theme="c" class="ui-btn ui-btn-up-c ui-btn-inline ui-shadow ui-btn-corner-all"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">Clear</span></span></a>
+            </td>
+        </tr>
+    </tbody></table>
+    
+    
+    </div><div class="ui-loader ui-corner-all ui-body-a ui-loader-default"><span class="ui-icon ui-icon-loading"></span><h1>loading</h1></div></body></html>
