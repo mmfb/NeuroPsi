@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-image: url('loginbackground2.png');
+    background-image: url('../images/loginbackground2.png');
     background-repeat: no-repeat;
     background-size:1000px 818px;
     background-color: rgb(243, 242, 242);
