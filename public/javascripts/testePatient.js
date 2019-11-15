@@ -1,13 +1,35 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
-window.onload = window.setTimeout(startAnimation, 100);
+$("#startBtn").click(function(){
+    btnTxt = $(this).html();
+    if(btnTxt == "Começar"){
+        startRey();
+        $(this).html("Proximo");
+        
+    }else if(btnTxt == "Proximo"){
+        stopRecording();
+        var serRec = serializeDrawing(drawing);
+        alert(JSON.stringify(serRec));
+        context.clearRect(0,0, canvas.width, canvas.height);
+        $.ajax({
+            url: "/api/clientes/1/ficha/testes/1/resultados",
+            method: "post",
+            contentType: "application/json",
+            data: JSON.stringify(serRec),
+            success: function(res, status){
+                alert("Sucesso");
+                window.location = "/resultsNero.html";
+            }
+        });
+    }
+    
+    $("#startBtn").prop("value","Proximo");
+});
 
-function startAnimation(){
-    const elem = document.getElementsByClassName(".btn btn-white btn-animate");
-    elem.style.transform = "translateY(-3px)";
-    elem.style.boxShadow = "0 10px 20px rgba(0, 0, 0, 0.2)";
-}
+$("#startBtn").click(function(){
+    
+})
 
 function openSlideMenu(){
 	document.getElementById('sideMenu').style.width='240px';
@@ -16,16 +38,50 @@ function closeSlideMenu(){
     document.getElementById('sideMenu').style.width=0;
 }
 
-function startRey(){
-    var img = new Image();
-    img.onload = function(){
-        context.drawImage(img, canvas.width/2 - img.width/2, canvas.height/2 - img.height/2);
-    };
-    img.src = "images/reyImage.gif";
-    window.setTimeout(startDraw, 1000);
+function imgAnimation(img){
+    var imgWidth = img.width;
+    var imgHeight = img.height;
+    var x = canvas.width/2 - imgWidth/2;
+    var y = canvas.height/2 - imgHeight/2;
+    
+    var interval = setInterval(function(){    
+        context.clearRect(0,0, canvas.width, canvas.height);
+        context.drawImage(img, x, y, imgWidth, imgHeight);
+
+        window.setTimeout(function(){
+            if(imgWidth > canvas.width*0.35){
+                x = canvas.width/2 - imgWidth/2;
+                y = canvas.height/2 - imgHeight/2;
+                imgWidth -= 2;
+                imgHeight -= 2;
+            }else{
+                if(x < canvas.width - imgWidth || y > 0){
+                    if(x < canvas.width - imgWidth){
+                        x+=2;
+                    }
+                    if(y > 0){
+                        y-=2;
+                    }
+                }else{
+                    clearInterval(interval);
+                }
+            }
+        }, 2000);  
+    }, 6);
 }
 
+function startRey(){
+    var img = new Image();
+    img.src = "images/reyImage.gif";
+    img.onload = function(){
+        imgAnimation(img);
+    }
+    window.setTimeout(function(){
+        startDraw("canvas");
+        startRecording();
 
+    }, 4000);
+}
 
 /*const circles = [
     {

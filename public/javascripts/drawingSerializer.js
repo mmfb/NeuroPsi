@@ -10,7 +10,7 @@ function serializeDrawing (drawingObj)
 		modifiedRecordings.push(serializeRecording(drawingObj.recordings[i]));
 	}
 	
-	return JSON.stringify(modifiedRecordings);
+	return modifiedRecordings;
 }
 
 function serializeRecording (recording)
@@ -64,7 +64,7 @@ function deserializeDrawing (serData)
 {
 	try
 	{
-		var recordings = JSON.parse(serData);
+		var recordings = serData;
 		var result = new Array();
 		if (recordings instanceof Array )
 		{
