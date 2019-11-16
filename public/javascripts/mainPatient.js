@@ -4,6 +4,3 @@ function openSlideMenu(){
 function closeSlideMenu(){
     document.getElementById('sideMenu').style.width=0;
 }
-
-window.onload = function (){
-}

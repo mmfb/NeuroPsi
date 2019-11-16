@@ -60,7 +60,7 @@ h1 {
     font-size: 16px;
 }
 
-.loginbox input[type="submit"]{
+.loginbox input[type="button"]{
     border: none;
     outline: none;
     height: 40px;
