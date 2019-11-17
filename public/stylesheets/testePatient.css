@@ -58,6 +58,12 @@ body{
     font-size: 36px;
     margin-left: 50px;
 }
+
+/*#settingsBtns{
+    bottom: 20px;
+    position: fixed;
+}*/
+
 #draw{
     margin:0 auto;
     margin-top: 80px;
@@ -74,6 +80,7 @@ body{
     border-radius: 100px;
     transition: all .2s;
     position: relative;
+    top: 10px;
 }
 
 .btn:hover {

@@ -2,7 +2,6 @@
 function startDraw(canvasId) {
 	var playbackInterruptCommand = "";
 	$("#pauseBtn").hide();
-	$("#playBtn").hide();	
 	drawing = new RecordableDrawing(canvasId);
 	
 

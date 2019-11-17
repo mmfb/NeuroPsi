@@ -12,7 +12,6 @@ window.onload = function(){
             //set drawing property of each recording
 			for (var i = 0; i < rec.length; i++)
                 rec[i].drawing = drawing;
-            $("#playBtn").show();
         }
     });
 }

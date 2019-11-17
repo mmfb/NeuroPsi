@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="stylesheets/testePatient.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="javascripts/mainPatient.js"></script>
   <title>NeuroPsi</title>
 </head>
 <body>
@@ -27,19 +28,14 @@
     <nav id="sideMenu" class="navSidebar">
         <ul>
             <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
+            <a href="#">Lista de pacientes</a>
             <a href="testePatient.html">Testes</a>
+            <a href="#">Resultados</a>
             <section id="settingsBtns">
                 <a href="#">Perfil</a>
                 <a href="#">Sair</a>
             </section>
         </ul>
     </nav>
-    <section id="draw">
-        <canvas height="560" width="1170" id="canvas" style="border: medium; border-color: #00F; border-style: solid"></canvas>
-        <a href="#" id = "startBtn" class="btn btn-white btn-animate">Começar</a>
-    </section>
 </body>
-    <script src="javascripts/testePatient.js"></script>
-    <script src="javascripts/RecordableDrawing.js"></script>
-    <script src="javascripts/drawingSerializer.js"></script>
 </html>

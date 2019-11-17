@@ -27,10 +27,6 @@ $("#startBtn").click(function(){
     $("#startBtn").prop("value","Proximo");
 });
 
-$("#startBtn").click(function(){
-    
-})
-
 function openSlideMenu(){
 	document.getElementById('sideMenu').style.width='240px';
 }
@@ -66,8 +62,8 @@ function imgAnimation(img){
                     clearInterval(interval);
                 }
             }
-        }, 2000);  
-    }, 6);
+        }, 500);  
+    }, 4);
 }
 
 function startRey(){
@@ -80,7 +76,7 @@ function startRey(){
         startDraw("canvas");
         startRecording();
 
-    }, 4000);
+    }, 1000);
 }
 
 /*const circles = [
