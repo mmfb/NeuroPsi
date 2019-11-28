@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="stylesheets/listaPacientes.css">
+  <link rel="stylesheet" href="stylesheets/navBars.css">
+  <link rel="stylesheet" href="stylesheets/patientsList.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="javascripts/mainPatient.js"></script>
   <title>NeuroPsi</title>
 </head>
 <body>
@@ -28,105 +28,33 @@
     <nav id="sideMenu" class="navSidebar">
         <ul>
             <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
+            <a href="listaPacientes.html">Lista de pacientes</a>
             <a href="resultsNero.html">Testes</a>
-            <a href="listaPacientes.html">Pacientes</a>
+            <a href="#">Resultados</a>
+            <section id="settingsBtns">
+                <a href="#">Perfil</a>
+                <a href="#">Sair</a>
+            </section>
         </ul>
     </nav>
-    <section id="w">
-            <header id="title">
-              <h1>Lista de pacientes</h1>
-            </header>
-            <section id="page">
-              <table id="tabela">
-                <thead>
-                  <tr>
-                    <th class="first"></th>
-                    <th class="second">Id</th>
-                    <th class="third">Nome</th>
-                    <th class="fourth">Idade</th>
-                    <th class="fifth">&nbsp;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- lista de pacientes -->
-                  <tr class="cliente">
-                    <td><img src="images/login pic.png" class="thumb"></td>
-                    <td>11323</td>
-                    <td>José Carlos</td>
-                    <td>29</td>
-                    <td>
-                      <span class="dropdown">
-                      <button class="dropbtn">V</button>
-                      <span class="dropdown-content">
-                          <a href="#">Testes</a>
-                          <a href="#">Ficha Cliente </a>
-                      </span></td>
-                  </tr>
-
-                  <tr class="cliente">
-                    <td><img src="images/login pic.png" class="thumb"></td>
-                    <td>11368</td>
-                    <td>João Gato</td>
-                    <td>41</td>
-                    <td>
-                        <span class="dropdown">
-                        <button class="dropbtn">V</button>
-                        <span class="dropdown-content">
-                            <a href="#">Testes</a>
-                            <a href="#">Ficha Cliente </a>
-                        </span></td>
-                  </tr>
-
-                  <tr class="cliente">
-                    <td><img src="images/login pic.png" class="thumb"></td>
-                    <td>11523</td>
-                    <td>Gabriel Gois</td>
-                    <td>32</td>
-                    <td>
-                        <span class="dropdown">
-                        <button class="dropbtn">V</button>
-                        <span class="dropdown-content">
-                            <a href="#">Testes</a>
-                            <a href="#">Ficha Cliente </a>
-                        </span></td>
-                  </tr>
-
-                  <tr class="cliente">
-                    <td><img src="images/login pic.png" class="thumb"></td>
-                    <td>32212</td>
-                    <td>Carla Rodrigues</td>
-                    <td>37</td>
-                    <td>
-                        <span class="dropdown">
-                        <button class="dropbtn">V</button>
-                        <span class="dropdown-content">
-                            <a href="#">Testes</a>
-                            <a href="#">Ficha Cliente </a>
-                        </span></td>
-                  </tr>
-
-                  <tr class="cliente">
-                      <td><img src="images/login pic.png" class="thumb"></td>
-                      <td>32142</td>
-                      <td>Manuel Simão</td>
-                      <td>56</td>
-                      <td>
-                          <span class="dropdown">
-                          <button class="dropbtn">V</button>
-                          <span class="dropdown-content">
-                              <a href="#">Testes</a>
-                              <a href="#">Ficha Cliente </a>
-                          </span></td>
-                      </tr>
-                  
-                  <!-- checkout btn -->
-                  <tr class="checkoutrow">
-                    <td colspan="5" class="checkout"></td>
-                  </tr>
-                </tbody>
-              </table>
-            </section>
-          </section>
-    
+    <header>
+        <h1>Lista de pacientes</h1>
+    </header>
+    <main>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th id="lShadow" class="colord">ID</th>
+                    <th class="colord">Nome</th>
+                    <th id="rShadow" class="colord">Idade</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody id="patients">
+            </tbody>
+        </table>
+    </main>
 </body>
+<script src="javascripts/patientsList.js"></script>
 </html>

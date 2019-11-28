@@ -1,17 +1,17 @@
 body {
     margin: 0;
     padding: 0;
-    background-image: url('../images/loginbackground2.png');
+    background-image: url('../images/loginBg.png');
     background-repeat: no-repeat;
-    background-size:1000px 818px;
     background-color: rgb(243, 242, 242);
     background-position: left center;
+    min-width: 500px;
 }
 
 .loginbox {
     width: 320px;
     height: 420px;
-    background: rgb(133, 184, 226);
+    background: rgb(104, 160, 206);
     color: #fff;
     top: 50%;
     left:75%;
@@ -20,7 +20,7 @@ body {
     box-sizing: border-box;
     padding: 70px 30px;
     border-radius: 10px;
-    box-shadow: 10px 10px 8px #888888;
+    box-shadow: 10px 10px 8px #302f2f;
 }
 
 .avatar {
