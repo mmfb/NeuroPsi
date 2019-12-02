@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="stylesheets/navBars.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+  <link rel="stylesheet" href="stylesheets/mapNero.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <title>NeuroPsi</title>
+</head>
+<body>
+    <nav class="navBar">
+        <span class="openSlide">
+            <a href="#" onClick="openSlideMenu()">
+                <svg width="30" height="30">
+                    <path d="M 0,5 30,5" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,14 30,14" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,23 30,23" stroke="#fff" stroke-width="5"/>
+                </svg>
+            </a>
+        </span>
+        <ul class="navBar-nav">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Serviços</a></li>
+            <li><a href="#">Contactos</a></li>
+        </ul>
+    </nav>
+    <nav id="sideMenu" class="navSidebar">
+        <ul>
+            <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
+            <a href="listaPacientes.html">Lista de pacientes</a>
+            <a href="resultsNero.html">Testes</a>
+            <a href="#">Resultados</a>
+            <section id="settingsBtns">
+                <a href="#">Perfil</a>
+                <a href="#">Sair</a>
+            </section>
+        </ul>
+    </nav>
+    <main>
+        <div id="map"></div>
+    </main>
+</body>
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+<script src="javascripts/mapNero.js"></script>
+<script src="javascripts/navBars.js"></script>
+</html>

@@ -1,0 +1,7 @@
+#map {
+    position: absolute; 
+    height: 91%;
+    width: 100%;
+    margin-top: 63px;
+    z-index: 1;
+}
