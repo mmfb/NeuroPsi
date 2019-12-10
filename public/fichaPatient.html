@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="stylesheets/navBars.css">
+  
+  <link rel="stylesheet" href="stylesheets/fichaPatient.css">
+  <title>NeuroPsi</title>
+</head>
+<body>
+    <nav class="navBar">
+        <span class="openSlide">
+            <a href="#" onClick="openSlideMenu()">
+                <svg width="30" height="30">
+                    <path d="M 0,5 30,5" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,14 30,14" stroke="#fff" stroke-width="5"/>
+                    <path d="M 0,23 30,23" stroke="#fff" stroke-width="5"/>
+                </svg>
+            </a>
+        </span>
+        <ul class="navBar-nav">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Serviços</a></li>
+            <li><a href="#">Contactos</a></li>
+        </ul>
+    </nav>
+    <nav id="sideMenu" class="navSidebar">
+        <ul>
+            <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
+            <a href="patientsList.html">Lista de pacientes</a>
+            <a href="resultsNero.html">Testes</a>
+            <a href="#">Resultados</a>
+            <section id="settingsBtns">
+                <a href="#">Perfil</a>
+                <a href="#">Sair</a>
+            </section>
+        </ul>
+    </nav>
+    <header>
+        <img src="images/user1.png">
+        <section>
+                <p>Nº Utente: </p>
+                <p>Nome: </p>
+                <p>Data Nascimento: </p>
+                <p>Sexo: </p>
+        </section>
+        
+    </header>
+    <main>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th class="colord"> Marcar Teste <a href=""><img src="images/plus3.png"></a> </th>
+                    <th class="colord">Teste</th>
+                    <th class="colord">Data</th>
+                </tr>
+            </thead>
+            <tbody id="patients">
+            </tbody>
+        </table>
+        <section>
+            <p>Log</p>
+        </section>
+    </main>
+</body>
+<script src="javascripts/patientsList.js"></script>
+</html>
