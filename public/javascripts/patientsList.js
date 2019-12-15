@@ -1,19 +1,13 @@
-function openSlideMenu(){
-	document.getElementById('sideMenu').style.width='240px';
-}
-function closeSlideMenu(){
-    document.getElementById('sideMenu').style.width=0;
-}
 
 var patients;
 
 window.onload = function(){
     var patientsT = document.getElementById("patients");
     $.ajax({
-        url:"/api/patients",
+        url:"/api/nero/"+1+"/patients",
         method:"get",
         success: function(result, status){
-            patients = result;
+            patients = result.patients;
             var str="";
             for(i in patients){
                 str+="<tr><td><img src='images/login pic.png'></td><td>"+patients[i].id+"</td><td>"+patients[i].name+

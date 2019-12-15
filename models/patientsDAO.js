@@ -58,12 +58,30 @@ module.exports.register = function(patients, callback, next){
         if (err) {conn.release(); next(err);}
         else{
             conn.query("insert into User (id, name) values (?,?)", [patients.id, patients.name], function(err, rows){
-                conn.release(); callback(rows);
+                conn.release();
+                callback(rows);
             })
         }
     })
 }
-
-module.exports.getNeroPatients = function(callback){
-    callback(patients);
+module.exports.getNeroPatients = function(neroId, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status: "Error in the connection to the database"})
+            return;
+        }
+        conn.query("select patientId, name, email, birthdate, user_locId from User, Patient, Attribution where userId = patient_userId and patient_userId = attrib_fileId and attrib_neroId = ?", 
+        [neroId], function(err, result){
+            conn.release();
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"})
+                return;
+            }
+            var patients;
+            for(p of result){
+                patients.push(result[0])
+            }
+            callback(false, {code:200, status:"Ok", patients: patients});
+        })
+    })
 };
