@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="stylesheets/testePatient.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="javascripts/mainPatient.js"></script>
+  <link rel="stylesheet" href="stylesheets/navBars.css">
+  
+  <link rel="stylesheet" href="stylesheets/fichaPatient.css">
   <title>NeuroPsi</title>
 </head>
 <body>
@@ -37,5 +37,32 @@
             </section>
         </ul>
     </nav>
+    <header>
+        <img src="images/user1.png">
+        <section>
+                <p>Nº Utente: </p>
+                <p>Nome: </p>
+                <p>Data Nascimento: </p>
+                <p>Sexo: </p>
+        </section>
+        
+    </header>
+    <main>
+        <table id="table">
+            <thead>
+                <tr>
+                    <th class="colord"> Marcar Teste <a href=""><img src="images/plus3.png"></a> </th>
+                    <th class="colord">Teste</th>
+                    <th class="colord">Data</th>
+                </tr>
+            </thead>
+            <tbody id="patients">
+            </tbody>
+        </table>
+        <section>
+            <p>Log</p>
+        </section>
+    </main>
 </body>
+<script src="javascripts/patientsList.js"></script>
 </html>
