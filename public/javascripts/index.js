@@ -19,7 +19,7 @@ $("#loginBtn").click(function(){
                 if(result.user.patientId != null){
                     window.location = "testePatient.html";
                 }else if(result.user.neroId != null){
-                    window.location = "patientsList.html?yourkey="+yourValue;
+                    window.location = "patientsList.html";
                 }
             }
         }

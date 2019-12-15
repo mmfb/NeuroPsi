@@ -1,9 +1,9 @@
 var express = require("express");
 var router = express.Router();
-var patientsDAO = require("../models/patientsDAO");
+var neroDAO = require("../models/neroDAO");
 
 router.get('/:neroId/patients', function(req, res, next){
-    patientsDAO.getNeroPatients(req.params, function(err, result){
+    neroDAO.getNeroPatients(req.params.neroId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -15,7 +15,7 @@ router.get('/:neroId/patients', function(req, res, next){
 
 router.post('/', function(req, res, next){
     var register = req.body;
-    patientsDAO.register(register, function(result){
+    neroDAO.register(register, function(result){
         res.writeHead(200, {'Content-Type':'application/json'});
         res.send(result);
     }, next);

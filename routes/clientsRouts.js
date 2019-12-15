@@ -3,13 +3,13 @@ var router = express.Router();
 
 var resultados = [];
 router.get('/:userId/ficha/testes/:testId/resultados', function(req, res, next) {
-res.send(resultados);
+    res.send(resultados);
 });
 
 router.post('/:userId/ficha/testes/:testId/resultados', function(req, res, next) {
-resultados = req.body;
-console.log(req.body);
-res.send({status: "ok"});
+    resultados = req.body;
+    console.log(req.body);
+    res.send({status: "ok"});
 });
 
 
