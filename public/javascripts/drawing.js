@@ -21,10 +21,6 @@ function createRecordableDrawing(canvasId){
     $(self.canvas).bind("mousemove", hadleMouseMove);
 }
 
-function mouseListener(){
-    document.addEventListener("mousedown", handleMouseDown)
-
-    function handleMouseDown(){
-
-    }
+function handleMouseDown(){
+    
 }

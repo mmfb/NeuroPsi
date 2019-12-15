@@ -1,6 +1,8 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
+
+
 $("#startBtn").click(function(){
     btnTxt = $(this).html();
     if(btnTxt == "Começar"){
@@ -26,13 +28,6 @@ $("#startBtn").click(function(){
     
     $("#startBtn").prop("value","Proximo");
 });
-
-function openSlideMenu(){
-	document.getElementById('sideMenu').style.width='240px';
-}
-function closeSlideMenu(){
-    document.getElementById('sideMenu').style.width=0;
-}
 
 function imgAnimation(img){
     var imgWidth = img.width;

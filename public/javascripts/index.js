@@ -1,7 +1,28 @@
+
 $("#loginBtn").click(function(){
-    window.location = "testePatient.html";
+    var name = $("#email").val();
+    $.ajax({
+        url: "/api/users/" + name,
+        method: "get",
+        contentType: "application/json",
+        dataType: "json",
+        success: function(result, status){
+            if(result.err){
+                console.log(JSON.stringify(result));
+                return;
+            }
+            if(!result.user){
+                alert("Esse utilizador não existe");
+            }else{
+                if(result.user.patientId != null){
+                    window.location = "testePatient.html";
+                }else if(result.user.neroId != null){
+                    window.location = "patientsList.html";
+                }
+            }
+        }
+    })
 })
 
-$("#loginBtn2").click(function(){
-    window.location = "mainNero.html";
-})
+$.notify('Aqui');
+$('#loginBtn').notify("Hello", 'info');

@@ -8,4 +8,12 @@ router.get('/', function(req, res, next){
     })
 });
 
+router.post('/', function(req, res, next){
+    var register = req.body;
+    patientsDAO.register(register, function(result){
+        res.writeHead(200, {'Content-Type':'application/json'});
+        res.send(result);
+    }, next);
+});
+
 module.exports = router;

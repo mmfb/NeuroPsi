@@ -1,3 +1,5 @@
+var mysql = require('../public/javascripts/mysqlConn').pool;
+
 var patients = [
     {
         id:"11323",
@@ -51,6 +53,17 @@ var patients = [
     }
 ];
 
-module.exports.getPatients = function(callback){
+module.exports.register = function(patients, callback, next){
+    mysql.getConnection(function(err, conn){
+        if (err) {conn.release(); next(err);}
+        else{
+            conn.query("insert into User (id, name) values (?,?)", [patients.id, patients.name], function(err, rows){
+                conn.release(); callback(rows);
+            })
+        }
+    })
+}
+
+module.exports.getNeroPatients = function(callback){
     callback(patients);
 };
