@@ -11,3 +11,34 @@ module.exports.register = function(patients, callback, next){
         }
     })
 }
+
+module.exports.searchPendingTests = function(patientId, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("select attribId from Attribution where attrib_fileId = ?;", [patientId], function(err, result){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"})
+                return;
+            }
+            var attribId = [];
+            for(i of result){
+                attribId.push(i)
+            }
+            if(attribId.length > 0){
+                var query="select testState from Test where ";
+                for(i of attribId)
+                conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
+                    conn.release();
+                    if(err){
+                        callback(err, {code:500, status: "Error in a database query"});
+                        return;
+                    }
+                    callback(false, {code:200, status:"Ok"});
+                });
+            }   
+        })
+    })
+}
