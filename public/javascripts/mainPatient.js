@@ -9,3 +9,8 @@ $(document).ready(function(){
     var contentPlacement = $("#navBar").position().top + $("#navBar").height();
     $("#title").css("margin-top", contentPlacement);
 });
+
+const patientId = sessionStorage("patientId");
+
+window.onload = function(){
+}

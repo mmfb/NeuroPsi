@@ -1,6 +1,4 @@
-
-var neroId = 1;
-
+const neroId = sessionStorage.getItem("neroId");;
 window.onload = function(){
     var patientsT = document.getElementById("patients");
     $.ajax({
@@ -11,7 +9,7 @@ window.onload = function(){
             for(p of result.patients){
                 str+="<tr><td><img src='images/login pic.png'></td><td>"+p.patientId+"</td><td>"+p.name+
                 "</td><td>"+p.birthdate+
-                "</td><td><div class='dropdown'><button class='dropbtn'>V</button><div class='dropContent'><a href='#'>Link 1</a><a href='#'>Link 2</a><a href='#'>Link 3</a></div></div></td></tr>"
+                "</td><td><div class='dropdown'><button class='dropbtn'>V</button><div class='dropContent'><a onclick = 'addTest(p.patientId)' href='#'>Marcar teste</a><a href='#'>Ver resultados</a><a href='#'>Ficha</a></div></div></td></tr>"
             }
             patientsT.innerHTML = str;
         },
@@ -20,5 +18,20 @@ window.onload = function(){
         }
     })
 };
+
+function addTest(patientId){
+    $.ajax({
+        url:"/api/patients/"+patientId+"/tests",
+        method:"post",
+        contentType: "application/json",
+        data: JSON.stringify({neroId: neroId, patientId: patientId}),
+        success: function(data, status){
+            alert("Teste marcado");
+        },
+        error: function(){
+            console.log("Error");
+        }
+    })
+}
 
 

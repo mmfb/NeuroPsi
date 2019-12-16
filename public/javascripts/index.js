@@ -17,8 +17,10 @@ $("#loginBtn").click(function(){
                 alert("Esse utilizador não existe");
             }else{
                 if(result.user.patientId != null){
+                    sessionStorage.setItem("patientId", result.user.patientId);
                     window.location = "testePatient.html";
                 }else if(result.user.neroId != null){
+                    sessionStorage.setItem("neroId",result.user.neroId);
                     window.location = "patientsList.html";
                 }
             }
