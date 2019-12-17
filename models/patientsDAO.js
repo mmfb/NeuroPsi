@@ -49,7 +49,6 @@ module.exports.searchPendingTests = function(patientId, callback, next){
 }
 
 module.exports.saveReplay = function(testId, rec, callback, next){
-    console.log(JSON.stringify(rec));
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
@@ -60,7 +59,13 @@ module.exports.saveReplay = function(testId, rec, callback, next){
                 callback(err, {code:500, status: "Error in a database query"})
                 return;
             }
-            callback(false, {code:200, status:"Ok"});
+            conn.query("update Test set testState = ? where testId = ?;", ["Completed", testId], function(err, result){
+                if(err){
+                    callback(err, {code:500, status: "Error in a database query"})
+                    return;
+                }
+                callback(false, {code:200, status:"Ok"});
+            });
         })
     })
 }

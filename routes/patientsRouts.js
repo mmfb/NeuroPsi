@@ -36,4 +36,15 @@ router.post('/:patientId/tests/:testId/replay', function(req, res, next) {
     }, next);
 });
 
+router.get('/:patientId/tests/completed/replay', function(req, res, next) {
+    neroDAO.getReplay(req.params.patientId, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.status(200).send(result);
+    })
+});
+
 module.exports = router;
