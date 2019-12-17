@@ -1,3 +1,6 @@
+
+var testsPending;
+
 function openSlideMenu(){
 	document.getElementById('sideMenu').style.width='240px';
 }
@@ -5,12 +8,26 @@ function closeSlideMenu(){
     document.getElementById('sideMenu').style.width=0;
 }
 
-$(document).ready(function(){
+/*$(document).ready(function(){
     var contentPlacement = $("#navBar").position().top + $("#navBar").height();
     $("#title").css("margin-top", contentPlacement);
-});
+});*/
 
-const patientId = sessionStorage("patientId");
+const patientId = parseInt(sessionStorage.getItem("patientId"));
 
 window.onload = function(){
+    $.ajax({
+        url:"/api/patients/"+patientId+"/tests/pending",
+        methos:"get",
+        success: function(result, status){
+            testsPending = result.tests;
+            console.log(testsPending[0].testId);
+
+            if(testsPending){
+                sessionStorage.setItem("testPendingId", testsPending[0].testId);
+                openSlideMenu();
+                $('#testBtn').notify("Teste pendente", 'info');
+            }
+        }
+    })
 }

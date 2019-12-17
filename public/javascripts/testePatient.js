@@ -1,7 +1,12 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
+var testId;
+var patientId;
 
-
+window.onload = function(){
+    testId = parseInt(sessionStorage.getItem("testPendingId"));
+    patientId = parseInt(sessionStorage.getItem("patientId"));
+}
 
 $("#startBtn").click(function(){
     btnTxt = $(this).html();
@@ -12,16 +17,14 @@ $("#startBtn").click(function(){
     }else if(btnTxt == "Proximo"){
         stopRecording();
         var serRec = serializeDrawing(drawing);
-        alert(JSON.stringify(serRec));
         context.clearRect(0,0, canvas.width, canvas.height);
         $.ajax({
-            url: "/api/clientes/1/ficha/testes/1/resultados",
+            url: "/api/patients/"+patientId+"/tests/"+testId+"/replay",
             method: "post",
             contentType: "application/json",
             data: JSON.stringify(serRec),
             success: function(res, status){
-                alert("Sucesso");
-                window.location = "/resultsNero.html";
+                alert("Teste submetido");
             }
         });
     }

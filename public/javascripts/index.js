@@ -1,6 +1,4 @@
 
-var yourValue = 'something';
-
 $("#loginBtn").click(function(){
     var name = $("#email").val();
     $.ajax({
@@ -18,7 +16,7 @@ $("#loginBtn").click(function(){
             }else{
                 if(result.user.patientId != null){
                     sessionStorage.setItem("patientId", result.user.patientId);
-                    window.location = "testePatient.html";
+                    window.location = "mainPatient.html";
                 }else if(result.user.neroId != null){
                     sessionStorage.setItem("neroId",result.user.neroId);
                     window.location = "patientsList.html";

@@ -25,20 +25,52 @@ module.exports.searchPendingTests = function(patientId, callback, next){
             }
             var attribId = [];
             for(i of result){
-                attribId.push(i)
+                attribId.push(i.attribId);
             }
             if(attribId.length > 0){
-                var query="select testState from Test where ";
-                for(i of attribId)
-                conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
+                var values = ["Pending", attribId[0]]
+                var query="select * from Test where testState = ? and (test_attribId = ?";;
+                for(var i=1; i<attribId.length; i++){
+                    query += " or test_attribId = ?"
+                    values.push(attribId[i]);
+                }
+                query += ");";
+                conn.query(query, values, function(err, result){
                     conn.release();
                     if(err){
                         callback(err, {code:500, status: "Error in a database query"});
                         return;
                     }
-                    callback(false, {code:200, status:"Ok"});
+                    callback(false, {code:200, status:"Ok", tests: result});
                 });
             }   
         })
     })
 }
+
+module.exports.saveReplay = function(testId, rec, callback, next){
+    console.log(JSON.stringify(rec));
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("insert into Replay (rec, creationDate, replay_testId) values (?,?,?);", [JSON.stringify(rec), new Date(), testId], function(err, result){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"})
+                return;
+            }
+            callback(false, {code:200, status:"Ok"});
+        })
+    })
+}
+
+/*module.exports.getTestes = function(testId, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("")
+    })
+}*/
