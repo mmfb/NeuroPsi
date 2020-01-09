@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="stylesheets/navBars.css">
-  
-  <link rel="stylesheet" href="stylesheets/fichaPatient.css">
+  <link rel="stylesheet" href="stylesheets/patientFile.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <title>NeuroPsi</title>
 </head>
 <body>
@@ -28,9 +28,9 @@
     <nav id="sideMenu" class="navSidebar">
         <ul>
             <a href="#" class="btnClose" onClick="closeSlideMenu()">&times;</a>
-            <a href="patientsList.html">Lista de pacientes</a>
+            <a href="listaPacientes.html">Lista de pacientes</a>
             <a href="resultsNero.html">Testes</a>
-            <a href="#">Resultados</a>
+            <a id = "resultsBtn" href="resultsNero.html">Resultados</a>
             <section id="settingsBtns">
                 <a href="#">Perfil</a>
                 <a href="#">Sair</a>
@@ -39,30 +39,29 @@
     </nav>
     <header>
         <img src="images/user1.png">
-        <section>
-                <p>Nº Utente: </p>
-                <p>Nome: </p>
-                <p>Data Nascimento: </p>
-                <p>Sexo: </p>
+        <section id = "patientInfoS">
         </section>
-        
     </header>
     <main>
         <table id="table">
             <thead>
+                <tr id="theader">
+                    <th colspan="3">Testes</th>
+                    <th colspan="2">Resultados</th>
+                </tr>
                 <tr>
-                    <th class="colord"> Marcar Teste <a href=""><img src="images/plus3.png"></a> </th>
-                    <th class="colord">Teste</th>
-                    <th class="colord">Data</th>
+                    <th>id</th>
+                    <th>estado</th>
+                    <th>data</th>
+                    <th>data</th>
+                    <th>comentário</th>
                 </tr>
             </thead>
-            <tbody id="patients">
+            <tbody id="testsT">
             </tbody>
         </table>
-        <section>
-            <p>Log</p>
-        </section>
     </main>
 </body>
-<script src="javascripts/patientsList.js"></script>
+<script src="javascripts/patientFile.js"></script>
+<script src="javascripts/navBars.js"></script>
 </html>
