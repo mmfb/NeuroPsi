@@ -8,11 +8,6 @@ function closeSlideMenu(){
     document.getElementById('sideMenu').style.width=0;
 }
 
-/*$(document).ready(function(){
-    var contentPlacement = $("#navBar").position().top + $("#navBar").height();
-    $("#title").css("margin-top", contentPlacement);
-});*/
-
 const patientId = parseInt(sessionStorage.getItem("patientId"));
 
 window.onload = function(){

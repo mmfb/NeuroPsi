@@ -25,6 +25,3 @@ $("#loginBtn").click(function(){
         }
     })
 })
-
-$.notify('Aqui');
-$('#loginBtn').notify("Hello", 'info');

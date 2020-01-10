@@ -1,25 +1,30 @@
 const neroId = parseInt(sessionStorage.getItem("neroId"));
-var patientId;
+const patientsT = document.getElementById("patientsT");
+var patients;
+
 window.onload = function(){
-    var patientsT = document.getElementById("patients");
     $.ajax({
-        url:"/api/nero/"+neroId+"/patients",
+        url:"/api/neros/"+neroId+"/patients",
         method:"get",
         success: function(result, status){
-            var str="";
-            for(p of result.patients){
-                patientId=p.patientId;
-                str+="<tr><td><img src='images/login pic.png'></td><td>"+p.patientId+"</td><td>"+p.name+
-                "</td><td>"+p.birthdate+
-                "</td><td><div class='dropdown'><button class='dropbtn'>V</button><div class='dropContent'><a onclick = 'addTest("+patientId+")' href='#'>Marcar teste</a><a href='#'>Ver resultados</a><a href='#'>Ficha</a></div></div></td></tr>"
-            }
-            patientsT.innerHTML = str;
+            patients = result.patients;
+            patientsHtmlInjection(patients);
         },
         error: function(){
             console.log("Error");
         }
     })
 };
+
+function patientsHtmlInjection(patients){
+    var str="";
+    for(p of patients){
+        str+="<tr onclick = selectPatient("+p.patientId+")><td><img src='images/login pic.png'></td><td>"+p.patientId+"</td><td>"+p.name+
+        "</td><td>"+p.age+
+        "</td><td><div class='dropdown'><button class='dropbtn'>V</button><div class='dropContent'><a onclick = 'addTest("+p.patientId+")' href='#'>Marcar teste</a><a href='#'>Ver resultados</a><a href='#'>Ficha</a></div></div></td></tr>"
+    }
+    patientsT.innerHTML = str;
+}
 
 function addTest(patientId){
     $.ajax({
@@ -33,6 +38,11 @@ function addTest(patientId){
             console.log("Error");
         }
     })
+}
+
+function selectPatient(patientId){
+    sessionStorage.setItem('patientId', patientId);
+    window.location = 'patientFile.html';
 }
 
 

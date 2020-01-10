@@ -17,34 +17,67 @@ $.getJSON("https://nominatim.openstreetmap.org/search/alges%20Portugal?format=js
 
   var lat = data[0].lat;
   var lng = data[0].lon;
-  console.log(lat+","+lng);
   L.marker([lat, lng]).addTo(map)
 })
 
+/*var routeControl = L.Routing.control({
+  waypoints: [
+    L.latLng(38.770611, -9.10697),
+    L.latLng(38.720356, -9.131448)
+  ],
+  show: false,
+  routeWhileDragging: false,
+  addWaypoints: false,
+  draggableWaypoints: false,
+  lineOptions: {
+    styles: [{color: 'black', opacity: 0.15, weight: 9},
+    {color: 'white',opacity: 0.8, weight: 6},
+    {color: 'orange', opacity: 1, weight: 2}]}
+}).addTo(map);
 
-
-
-//var osmGeocoder = new L.Control.OSMGeocoder({placeholder: 'Search location...'});
-
-//map.addControl(osmGeocoder);
-
-/*if('geolocation' in navigator){
-  navigator.geolocation.getCurrentPosition(function(position){
-    markers.push({
-      latLng:[position.coords.latitude, position.coords.longitude],
-      icon:{
-        color: 'blue',
-        fillColor: 'blue',
-        fillOpacity: 0.3,
-        radius: 100
-      }
-    })
-    loadMarkers(markers);
+routeControl.on('routesfound', function(e) {
+  var routes = e.routes;
+  var summary = routes[0].summary;
+  var latlngs = e.routes[0].coordinates;
+  var time = Math.round(summary.totalTime % 3600 / 60);
+  var distance = summary.totalDistance / 1000;
+  //alert('Total distance is ' + distance + ' km and total time is ' + time + ' minutes');
+  var waypoints = []
+  for (i of latlngs){
+    waypoints.push([i.lat, i.lng]);
+  }
+  
+  $.ajax({
+    url:"/api/patients/"+1+"/tests/"+1+"/routes",
+    method:"post",
+    data: {waypoints: JSON.stringify(waypoints), time: time, distance: distance},
+    success: function(data, status){
+        alert("Route guadada");
+    },
+    error: function(){
+        console.log("Error");
+    }
   })
-}*/
+});*/
+
 
 window.onload = function(){
   loadMarkers(markers)
+
+  $.ajax({
+    url:"/api/neros/"+2+"/patients/"+2+"/routes",
+    method:"get",
+    success: function(result, status){
+      var routes = result.routes;
+      var waypoints = JSON.parse(routes[0].waypoints);
+      var polyline = L.polyline(waypoints, {color: 'red'}).addTo(map);
+      // zoom the map to the polyline
+      map.fitBounds(polyline.getBounds());
+    },
+    error: function(){
+        console.log("Error");
+    }
+  })
 }
 
 function loadMarkers(markers){

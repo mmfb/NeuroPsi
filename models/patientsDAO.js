@@ -70,6 +70,22 @@ module.exports.saveReplay = function(testId, rec, callback, next){
     })
 }
 
+module.exports.saveRoute = function(testId, waypoints, time, distance, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("insert into Route (waypoints, time, distance, route_testId) values (?,?,?,?)", [waypoints, time, distance, testId], function(err, result){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"})
+                return;
+            }
+            callback(false, {code:200, status:"Ok"});
+        });
+    });
+}
+
 /*module.exports.getTestes = function(testId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){

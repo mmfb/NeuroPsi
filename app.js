@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var clientsRouter = require("./routes/clientsRouts");
-var neroRouter = require("./routes/neroRouts");
+var nerosRouter = require("./routes/nerosRouts");
 var usersRouter = require('./routes/usersRouts');
 var patientsRouter = require('./routes/patientsRouts');
 
@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/api/clientes', clientsRouter);
-app.use('/api/nero', neroRouter);
+app.use('/api/neros', nerosRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/patients', patientsRouter);
 

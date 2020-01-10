@@ -85,14 +85,12 @@ function startRey(){
         id: "Terminar", x: 0, y: 0, radius: 30, color: "rgb(0,255,0)"
     }
 ];
-
 circles.forEach(function(circle){
     context.beginPath();
     context.arc(circle.x, circle.y, circle.radius, 0, 2*Math.PI, false);
     context.fillStyle = circle.color;
     context.fill();
 });
-
 canvas.addEventListener("click", function(event){
     var mousePos = {
         x: event.clientX - canvas.getBoundingClientRect().left,
@@ -104,7 +102,6 @@ canvas.addEventListener("click", function(event){
         }
     })
 })
-
 function isIntersect(point, circle){
     return Math.sqrt((point.x - circle.x)**2 + (point.y - circle.y)**2) < circle.radius;
 }*/
