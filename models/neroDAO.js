@@ -98,7 +98,6 @@ module.exports.getPatientTests = function(patientId, neroId, callback, next){
                 t.assignedDate = formattedDate;
                 formattedDate = t.completedDate.getDate() + "-" + (t.completedDate.getMonth() + 1) + "-" + t.completedDate.getFullYear();
                 t.completedDate = formattedDate;
-
             }
             callback(false, {code:200, status:"Ok", tests: result});
         })

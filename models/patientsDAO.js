@@ -54,7 +54,7 @@ module.exports.saveReplay = function(testId, rec, callback, next){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("insert into Replay (rec, creationDate, replay_testId) values (?,?,?);", [JSON.stringify(rec), new Date(), testId], function(err, result){
+        conn.query("insert into Result (rec, completedDate, result_testId) values (?,?,?);", [JSON.stringify(rec), new Date(), testId], function(err, result){
             if(err){
                 callback(err, {code:500, status: "Error in a database query"})
                 return;
@@ -86,12 +86,33 @@ module.exports.saveRoute = function(testId, waypoints, time, distance, callback,
     });
 }
 
-/*module.exports.getTestes = function(testId, callback, next){
+module.exports.getPatientTests = function(patientId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("")
+        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Test left outer join Result on testId = result_testId, Patient where test_attribId in(select attribId from Attribution where attrib_fileId = 2);",
+        [patientId], function(err, result){
+            conn.release();
+            if(err){
+                callback(err, {code:500, status:"Error in a database query"});
+                return;
+            }
+            for(t of result){
+                var formattedDate = t.assignedDate.getDate() + "-" + (t.assignedDate.getMonth() + 1) + "-" + t.assignedDate.getFullYear();
+                t.assignedDate = formattedDate;
+                if(t.completedDate){
+                    formattedDate = t.completedDate.getDate() + "-" + (t.completedDate.getMonth() + 1) + "-" + t.completedDate.getFullYear();
+                    t.completedDate = formattedDate;
+                }else{
+                    t.completedDate = "-";
+                }
+                if(!t.comment){
+                    t.comment = "-";
+                }
+            }
+            callback(false, {code:200, status:"Ok", tests: result});
+        })
     })
-}*/
+}

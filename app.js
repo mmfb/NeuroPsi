@@ -4,8 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var clientsRouter = require("./routes/clientsRouts");
 var nerosRouter = require("./routes/nerosRouts");
 var usersRouter = require('./routes/usersRouts');
 var patientsRouter = require('./routes/patientsRouts');
@@ -22,8 +20,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/api/clientes', clientsRouter);
 app.use('/api/neros', nerosRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/patients', patientsRouter);

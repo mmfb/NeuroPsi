@@ -36,6 +36,19 @@ router.get('/:patientId/tests/pending', function(req, res, next){
     }, next);
 });
 
+router.get('/:patientId/tests', function(req, res, next){
+    console.log(req.params.patientId)
+    patientsDAO.getPatientTests(req.params.patientId, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.status(200).send(result);
+    }, next);
+});
+
+
 router.post('/:patientId/tests/:testId/replay', function(req, res, next) {
     patientsDAO.saveReplay(req.params.testId, req.body, function(err, result){
         if(err){

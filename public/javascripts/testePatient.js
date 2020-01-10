@@ -4,7 +4,7 @@ var testId;
 var patientId;
 
 window.onload = function(){
-    testId = parseInt(sessionStorage.getItem("testPendingId"));
+    testId = parseInt(sessionStorage.getItem("testId"));
     patientId = parseInt(sessionStorage.getItem("patientId"));
 }
 
