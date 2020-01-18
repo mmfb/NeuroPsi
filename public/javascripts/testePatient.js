@@ -2,10 +2,12 @@ const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 var testId;
 var patientId;
+var coords;
 
 window.onload = function(){
     testId = parseInt(sessionStorage.getItem("testId"));
     patientId = parseInt(sessionStorage.getItem("patientId"));
+    navigator.geolocation.getCurrentPosition(success, error);
 }
 
 $("#startBtn").click(function(){
@@ -21,8 +23,7 @@ $("#startBtn").click(function(){
         $.ajax({
             url: "/api/patients/"+patientId+"/tests/"+testId+"/replay",
             method: "post",
-            contentType: "application/json",
-            data: JSON.stringify(serRec),
+            data: {lat: coords.lat, lng: coords.lng, rec: JSON.stringify(serRec)},
             success: function(res, status){
                 alert("Teste submetido");
             }
@@ -77,31 +78,10 @@ function startRey(){
     }, 1000);
 }
 
-/*const circles = [
-    {
-        id: "Começar", x: 200, y:200, radius: 30, color: "rgb(255,0,0)"
-    },
-    {
-        id: "Terminar", x: 0, y: 0, radius: 30, color: "rgb(0,255,0)"
-    }
-];
-circles.forEach(function(circle){
-    context.beginPath();
-    context.arc(circle.x, circle.y, circle.radius, 0, 2*Math.PI, false);
-    context.fillStyle = circle.color;
-    context.fill();
-});
-canvas.addEventListener("click", function(event){
-    var mousePos = {
-        x: event.clientX - canvas.getBoundingClientRect().left,
-        y: event.clientY - canvas.getBoundingClientRect().top
-    };
-    circles.forEach(circle => {
-        if(isIntersect(mousePos, circle)){
-            alert("click on circle: " + circle.id);
-        }
-    })
-})
-function isIntersect(point, circle){
-    return Math.sqrt((point.x - circle.x)**2 + (point.y - circle.y)**2) < circle.radius;
-}*/
+function success(position){
+    coords = {lat: position.coords.latitude, lng: position.coords.longitude};
+}
+
+function error(err) {
+    console.warn('ERROR(' + err.code + '): ' + err.message);
+};

@@ -15,7 +15,7 @@ router.get('/:patientId', function(req, res, next){
 });
 
 router.post('/:patientId/tests', function(req, res, next){
-    neroDAO.postTest(req.body.patientId, req.body.neroId, function(err, result){
+    neroDAO.postTest(req.params.patientId, req.body.neroId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -47,9 +47,9 @@ router.get('/:patientId/tests', function(req, res, next){
     }, next);
 });
 
-
-router.post('/:patientId/tests/:testId/replay', function(req, res, next) {
-    patientsDAO.saveReplay(req.params.testId, req.body, function(err, result){
+router.post('/:patientId/tests/:testId/replay', function(req, res, next){
+    var coords = {lat: req.body.lat, lng: req.body.lng};
+    patientsDAO.saveReplay(req.params.testId, coords, req.body.rec, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -59,19 +59,8 @@ router.post('/:patientId/tests/:testId/replay', function(req, res, next) {
     }, next);
 });
 
-router.post('/:patientId/tests/:testId/routes', function(req, res, next){
-    patientsDAO.saveRoute(req.params.testId, req.body.waypoints, req.body.time, req.body.distance, function(err, result){
-        if(err){
-            res.statusMessage = result.status;
-            res.status(result.code).json(err);
-            return;
-        }
-        res.send({status: "Ok"});
-    }, next);
-});
-
-router.get('/:patientId/tests/completed/replay', function(req, res, next) {
-    neroDAO.getReplay(req.params.patientId, function(err, result){
+router.get('/:patientId/tests/:testId/completed/replay', function(req, res, next) {
+    neroDAO.getReplay(req.params.patientId, req.params.testId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

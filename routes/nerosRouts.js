@@ -25,8 +25,8 @@ router.get('/:neroId/patients/:patientId/tests', function(req, res, next){
     }, next);
 })
 
-router.get('/:neroId/patients/:patientId/routes', function(req, res, next){
-    neroDAO.getPatientRoutes(req.params.neroId, req.params.patientId, function(err, result){
+router.get('/:neroId/patients/tests/routes', function(req, res, next){
+    neroDAO.getNeuroTestsRoutes(req.params.neroId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

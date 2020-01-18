@@ -8,7 +8,6 @@ $("#loginBtn").click(function(){
         dataType: "json",
         success: function(result, status){
             if(result.err){
-                console.log(JSON.stringify(result));
                 return;
             }
             if(!result.user){

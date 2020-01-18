@@ -30,7 +30,7 @@ function addTest(patientId){
     $.ajax({
         url:"/api/patients/"+patientId+"/tests",
         method:"post",
-        data: {neroId: neroId, patientId: patientId},
+        data: {neroId: neroId},
         success: function(data, status){
             alert("Teste marcado");
         },

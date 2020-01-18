@@ -17,12 +17,6 @@ window.onload = function(){
         success: function(result, status){
             testsPending = result.tests;
             console.log(testsPending[0].testId);
-
-            if(testsPending){
-                sessionStorage.setItem("testPendingId", testsPending[0].testId);
-                openSlideMenu();
-                $('#testBtn').notify("Teste pendente", 'info');
-            }
         }
     })
 }

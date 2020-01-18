@@ -48,43 +48,96 @@ module.exports.searchPendingTests = function(patientId, callback, next){
     })
 }
 
-module.exports.saveReplay = function(testId, rec, callback, next){
+module.exports.saveReplay = function(testId, coords, rec, callback, next){
+    var routeId;
+    var result;
+    var locId;
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("insert into Result (rec, completedDate, result_testId) values (?,?,?);", [JSON.stringify(rec), new Date(), testId], function(err, result){
+        conn.query("select locId, routeId, ST_Distance_Sphere(coords, point(?,?)) as distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId where distance < 500 and test_attribId in (select attribId from Attribution, Test where test_attribId = attribId and testId = ?) order by distance limit 0,1;",
+        [coords.lng, coords.lat, testId], function(err, result){
             if(err){
                 callback(err, {code:500, status: "Error in a database query"})
                 return;
             }
-            conn.query("update Test set testState = ? where testId = ?;", ["Completed", testId], function(err, result){
+            result = result[0];
+        });
+        if(result){
+            routeId = result[0].routeId;
+        }else{
+            conn.query("insert into Location (coords) values (point(?,?));", [coords.lng, coords.lat], function(err, result){
+                if(err){
+                    callback(err, {code:500, status:"Error in a database query"})
+                    return;
+                }
+                locId = result.insertId;
+                
+                conn.query("insert into Route (route_locId) values (?);", [locId], function(err, result){
+                    if(err){
+                        callback(err, {code:500, status: "Error in a database query"})
+                        return;
+                    }
+                    routeId = result.insertId;
+
+                    console.log(routeId)
+                    conn.query("insert into Result (rec, completedDate, result_testId) values (?,?,?);", [rec, new Date(), testId], function(err, result){
+                        if(err){
+                            callback(err, {code:500, status: "Error in a database query"})
+                            return;
+                        }
+                        conn.query("update Test set testState = ?, test_routeId = ? where testId = ?;", ["Completed", routeId, testId], function(err, result){
+                            conn.release();
+                            if(err){
+                                callback(err, {code:500, status: "Error in a database query"})
+                                return;
+                            }
+                            callback(false, {code:200, status:"Ok"});
+                        });
+                    })
+                });
+            })
+        }
+    })
+}
+
+/*function getRouteId(testId, coords, callback){
+    var routeId;
+    var locId;
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        console.log(coords.lng +"/"+ coords.lat)
+        conn.query("select locId, routeId, ST_Distance_Sphere(coords, point(?,?)) as distance from Location inner join Route on route_locId = locId inner join test on test_routeId = routeId where test_attribId in (select attribId from Attribution, Test where test_attribId = attribId and testId = ?) order by distance limit 0,1;",
+        [coords.lng, coords.lat, testId], function(err, result){
+            if(err){
+                callback(err, {code:500, status: "EEEError in a database query"})
+                return;
+            }
+            locId = result[0];
+            console.log("Result: "+result);
+        });
+        if(result[0] && result[0].distance < 1000){
+            routeId = result[0].routeId;
+        }else{
+            var locId = saveLocation(coords, callback);
+
+            conn.query("insert into Route (route_locId) values (?); select LAST_INSERT_ID();", [locId], function(err, result){
+                conn.release();
                 if(err){
                     callback(err, {code:500, status: "Error in a database query"})
                     return;
                 }
-                callback(false, {code:200, status:"Ok"});
+                routeId = result[0];
             });
-        })
-    })
-}
-
-module.exports.saveRoute = function(testId, waypoints, time, distance, callback, next){
-    mysql.getConnection(function(err, conn){
-        if(err){
-            callback(err, {code:500, status:"Error in the connection to the database"})
-            return;
         }
-        conn.query("insert into Route (waypoints, time, distance, route_testId) values (?,?,?,?)", [waypoints, time, distance, testId], function(err, result){
-            if(err){
-                callback(err, {code:500, status: "Error in a database query"})
-                return;
-            }
-            callback(false, {code:200, status:"Ok"});
-        });
     });
-}
+    return routeId;
+}*/
 
 module.exports.getPatientTests = function(patientId, callback, next){
     mysql.getConnection(function(err, conn){
@@ -92,7 +145,7 @@ module.exports.getPatientTests = function(patientId, callback, next){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Test left outer join Result on testId = result_testId, Patient where test_attribId in(select attribId from Attribution where attrib_fileId = 2);",
+        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Attribution inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ?;",
         [patientId], function(err, result){
             conn.release();
             if(err){
@@ -116,3 +169,22 @@ module.exports.getPatientTests = function(patientId, callback, next){
         })
     })
 }
+
+/*function saveLocation(coords, callback){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("insert into Location (coords) values (point(?,?));", [coords.lng, coords.lat], function(err, result){
+            if(err){
+                callback(err, {code:500, status:"Error in a database query"})
+                return;
+            }
+            console.log("1 "+result.insertId)
+            var locId = result.insertId;
+            console.log("2 "+locId);
+            return locId
+        })
+    })
+}*/
