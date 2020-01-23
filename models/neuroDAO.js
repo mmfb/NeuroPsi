@@ -1,13 +1,13 @@
-var mysql = require('../public/javascripts/mysqlConn').pool;
+var mysql = require('./mysqlConn').pool;
 
-module.exports.getNeroPatients = function(neroId, callback, next){
+module.exports.getNeuroPatients = function(neuroId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select patientId, name, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId from User, Patient, Attribution where userId = patient_userId and patient_userId = attrib_fileId and attrib_neroId = ?", 
-        [neroId], function(err, result){
+        conn.query("select patientId, name, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
+        [neuroId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status: "Error in a database query"})
@@ -36,28 +36,20 @@ module.exports.getPatientInfo = function(patientId, callback, next){
     })
 }
 
-module.exports.postTest = function(patientId, neroId, callback, next){
+module.exports.postTest = function(attribId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select attribId from Attribution where attrib_fileId = ? and attrib_neroId = ?;", [patientId, neroId], function(err, result){
+        conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
+            conn.release();
             if(err){
-                callback(err, {code:500, status: "Error in a database query"})
+                callback(err, {code:500, status: "Error in a database query"});
                 return;
             }
-            var attribId = result[0].attribId;
-
-            conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
-                conn.release();
-                if(err){
-                    callback(err, {code:500, status: "Error in a database query"});
-                    return;
-                }
-                callback(false, {code:200, status:"Ok"});
-            });
-        })
+            callback(false, {code:200, status:"Ok"});
+        });
     })
 }
 
@@ -80,14 +72,14 @@ module.exports.getReplay = function(patientId, testId, callback, next){
     })
 }
 
-module.exports.getPatientTests = function(neroId, patientId, callback, next){
+module.exports.getPatientTests = function(neuroId, patientId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Test left outer join Result on testId = result_testId, File, Neropsi where test_attribId in(select attribId from Attribution where attrib_fileId = ? and attrib_neroId = ?);",
-        [patientId, neroId], function(err, result){
+        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Test left outer join Result on testId = result_testId, File, Neuropsi where test_attribId in(select attribId from Attribution where attrib_fileId = ? and attrib_neuroId = ?);",
+        [patientId, neuroId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a database query"});
@@ -111,13 +103,13 @@ module.exports.getPatientTests = function(neroId, patientId, callback, next){
     })
 }
 
-module.exports.getPatientRoutes = function(neroId, patientId, callback, next){
+module.exports.getPatientRoutes = function(neuroId, patientId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select waypoints, time, distance from Route where route_testId in (select testId from Test where test_attribId in (Select attribId from Attribution where attrib_fileId = ? and attrib_neroId = ?));", [patientId, neroId], function(err, result){
+        conn.query("select waypoints, time, distance from Route where route_testId in (select testId from Test where test_attribId in (Select attribId from Attribution where attrib_fileId = ? and attrib_neuroId = ?));", [patientId, neuroId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a databse query"});
@@ -129,15 +121,15 @@ module.exports.getPatientRoutes = function(neroId, patientId, callback, next){
     })
 }
 
-module.exports.getNeuroTestsRoutes = function(neroId, callback, next){
-    console.log(neroId)
+module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
+    console.log(neuroId)
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neroId = ? group by routeId order by patientId;", 
-        [neroId], function(err, result){
+        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neuroId = ? group by routeId order by patientId;", 
+        [neuroId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a databse query"});

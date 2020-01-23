@@ -1,5 +1,5 @@
 const patientId = parseInt(sessionStorage.getItem('patientId'));
-const neroId = parseInt(sessionStorage.getItem('neroId'));
+const neuroId = parseInt(sessionStorage.getItem('neuroId'));
 const testsT = document.getElementById("testsT");
 const patientInfoS = document.getElementById("patientInfoS");
 var patient;
@@ -15,7 +15,7 @@ window.onload = function(){
         }
     })
     $.ajax({
-        url: '/api/neros/'+neroId+'/patients/'+patientId+'/tests',
+        url: '/api/neuros/'+neuroId+'/patients/'+patientId+'/tests',
         mathod: 'get',
         success: function(result, status){
             tests = result.tests;
@@ -43,5 +43,5 @@ function testsHtmlInjection(tests){
 
 function openReplay(testId){
     sessionStorage.setItem("testId", testId);
-    window.location = 'resultsNero.html';
+    window.location = 'resultsNeuro.html';
 }

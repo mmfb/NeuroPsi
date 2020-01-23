@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var nerosRouter = require("./routes/nerosRouts");
+var neurosRouter = require("./routes/neurosRouts");
 var usersRouter = require('./routes/usersRouts');
 var patientsRouter = require('./routes/patientsRouts');
 
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/neros', nerosRouter);
+app.use('/api/neuros', neurosRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/patients', patientsRouter);
 

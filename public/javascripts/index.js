@@ -7,17 +7,14 @@ $("#loginBtn").click(function(){
         contentType: "application/json",
         dataType: "json",
         success: function(result, status){
-            if(result.err){
-                return;
-            }
             if(!result.user){
                 alert("Esse utilizador não existe");
             }else{
                 if(result.user.patientId != null){
                     sessionStorage.setItem("patientId", result.user.patientId);
                     window.location = "patientTests.html";
-                }else if(result.user.neroId != null){
-                    sessionStorage.setItem("neroId",result.user.neroId);
+                }else if(result.user.neuroId != null){
+                    sessionStorage.setItem("neuroId",result.user.neuroId);
                     window.location = "patientsList.html";
                 }
             }

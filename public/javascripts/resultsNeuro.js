@@ -1,9 +1,12 @@
 const testId = parseInt(sessionStorage.getItem("testId"))
 const patientId = parseInt(sessionStorage.getItem("patientId"));
-window.onload = function(){
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const context = canvas.getContext("2d");
 
+window.onload = function(){
+    context.canvas.width  = window.innerWidth*0.99;
+   context.canvas.height = window.innerHeight*0.90;
+    
     $.ajax({
         url: "/api/patients/"+patientId+"/tests/"+testId+"/completed/replay",
         method: "get",

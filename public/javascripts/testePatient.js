@@ -1,37 +1,44 @@
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
-var testId;
-var patientId;
+const testId = parseInt(sessionStorage.getItem("testId"));
+const patientId = parseInt(sessionStorage.getItem("patientId"));
 var coords;
 
 window.onload = function(){
-    testId = parseInt(sessionStorage.getItem("testId"));
-    patientId = parseInt(sessionStorage.getItem("patientId"));
-    navigator.geolocation.getCurrentPosition(success, error);
+   navigator.geolocation.getCurrentPosition(success, error);
+   context.canvas.width  = window.innerWidth*0.99;
+   context.canvas.height = window.innerHeight*0.90;
+
+   $("#startBtn").click(function(){
+        btnTxt = $(this).html();
+        if(btnTxt == "Começar"){
+            startRey();
+            $(this).html("Proximo");
+            
+        }else if(btnTxt == "Proximo"){
+            stopRecording();
+            var serRec = serializeDrawing(drawing);
+            context.clearRect(0,0, canvas.width, canvas.height);
+            $.ajax({
+                url: "/api/patients/"+patientId+"/tests/"+testId+"/replay",
+                method: "post",
+                data: {lat: coords.lat, lng: coords.lng, rec: JSON.stringify(serRec)},
+                success: function(res, status){
+                    alert("Teste submetido");
+                }
+            });
+        }
+        $("#startBtn").prop("value","Proximo");
+    });
 }
 
-$("#startBtn").click(function(){
-    btnTxt = $(this).html();
-    if(btnTxt == "Começar"){
-        startRey();
-        $(this).html("Proximo");
-        
-    }else if(btnTxt == "Proximo"){
-        stopRecording();
-        var serRec = serializeDrawing(drawing);
-        context.clearRect(0,0, canvas.width, canvas.height);
-        $.ajax({
-            url: "/api/patients/"+patientId+"/tests/"+testId+"/replay",
-            method: "post",
-            data: {lat: coords.lat, lng: coords.lng, rec: JSON.stringify(serRec)},
-            success: function(res, status){
-                alert("Teste submetido");
-            }
-        });
-    }
-    
-    $("#startBtn").prop("value","Proximo");
-});
+function success(position){
+    coords = {lat: position.coords.latitude, lng: position.coords.longitude};
+}
+
+function error(err) {
+    console.warn('ERROR(' + err.code + '): ' + err.message);
+};
 
 function imgAnimation(img){
     var imgWidth = img.width;
@@ -74,14 +81,5 @@ function startRey(){
     window.setTimeout(function(){
         startDraw("canvas");
         startRecording();
-
     }, 1000);
 }
-
-function success(position){
-    coords = {lat: position.coords.latitude, lng: position.coords.longitude};
-}
-
-function error(err) {
-    console.warn('ERROR(' + err.code + '): ' + err.message);
-};

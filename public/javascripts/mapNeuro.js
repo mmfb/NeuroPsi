@@ -12,7 +12,7 @@ var options = {
 }
 var geocoder = L.Control.geocoder(options).addTo(map);
 
-const neroId = parseInt(sessionStorage.getItem("neroId"));
+const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsL = document.getElementById("patientsL");
 
 var layers = [];
@@ -21,7 +21,7 @@ var heats = [];
 
 
 window.onload = function(){
-  getNeuroTestsRoutes(neroId);
+  getNeuroTestsRoutes(neuroId);
 }
 
 /*$.getJSON("https://nominatim.openstreetmap.org/search/alges%20Portugal?format=json", function(data){
@@ -82,7 +82,7 @@ window.onload = function(){
 }).addTo(map);
 
   $.ajax({
-    url:"/api/neros/"+2+"/patients/"+2+"/routes",
+    url:"/api/neuros/"+2+"/patients/"+2+"/routes",
     method:"get",
     success: function(result, status){
       var routes = result.routes;
@@ -122,9 +122,9 @@ window.onload = function(){
   }
 }*/
 
-function getNeuroTestsRoutes(neroId){
+function getNeuroTestsRoutes(neuroId){
   $.ajax({
-    url:"/api/neros/"+neroId+"/patients/tests/routes",
+    url:"/api/neuros/"+neuroId+"/patients/tests/routes",
     method:"get",
     success: function(result, status){
       var testsRoutes = result.routes;

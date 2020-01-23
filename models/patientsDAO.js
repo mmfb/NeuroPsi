@@ -1,4 +1,4 @@
-var mysql = require('../public/javascripts/mysqlConn').pool;
+var mysql = require('./mysqlConn').pool;
 
 module.exports.register = function(patients, callback, next){
     mysql.getConnection(function(err, conn){

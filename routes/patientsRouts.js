@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var neroDAO = require('../models/neroDAO');
+var neuroDAO = require('../models/neuroDAO');
 var patientsDAO = require('../models/patientsDAO');
 
 router.get('/:patientId', function(req, res, next){
-    neroDAO.getPatientInfo(req.params.patientId, function(err, result){
+    neuroDAO.getPatientInfo(req.params.patientId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -12,17 +12,6 @@ router.get('/:patientId', function(req, res, next){
         }
         res.status(200).send(result);
     }, next)
-});
-
-router.post('/:patientId/tests', function(req, res, next){
-    neroDAO.postTest(req.params.patientId, req.body.neroId, function(err, result){
-        if(err){
-            res.statusMessage = result.status;
-            res.status(result.code).json(err);
-            return;
-        }
-        res.send({status: "ok"});
-    }, next);
 });
 
 router.get('/:patientId/tests/pending', function(req, res, next){
@@ -60,7 +49,7 @@ router.post('/:patientId/tests/:testId/replay', function(req, res, next){
 });
 
 router.get('/:patientId/tests/:testId/completed/replay', function(req, res, next) {
-    neroDAO.getReplay(req.params.patientId, req.params.testId, function(err, result){
+    neuroDAO.getReplay(req.params.patientId, req.params.testId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

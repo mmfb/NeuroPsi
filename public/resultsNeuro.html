@@ -10,19 +10,22 @@
 <body>
     <nav class="navBar">
         <ul class="navBar-nav">
-            <li><a href="patientTests.html">Perfil</a></li>
-            <li><a href="patientTests.html">Testes</a></li>
-            <li><a href="patientTests.html">Pendentes</a></li>
-            <li><a href="#">Psicólogos</a></li>
-            <li><a href="#">Sair</a></li> 
+            <li><a href="#">Perfil</a></li>
+            <li><a href="patientsList.html">Pacientes</a></li>
+            <li><a href="mapNeuro.html">Mapa</a></li>
+            <li><a href="index.html">Sair</a></li>
         </ul>
     </nav>
     <main>
         <canvas id="canvas" style="border: medium; border-color: #00F; border-style: solid"></canvas>
-        <a href="#" id = "startBtn" class="btn btn-white btn-animate">Começar</a>
+        <form>
+            <input id="playBtn" type="button" value="Play">
+            <input id="pauseBtn" type="button" value="Pause">
+            <input id="clearBtn" type="button" value="Clear">
+        </form>
     </main>
 </body>
-    <script src="javascripts/testePatient.js"></script>
+    <script src="javascripts/resultsNeuro.js"></script>
     <script src="javascripts/RecordableDrawing.js"></script>
     <script src="javascripts/drawingSerializer.js"></script>
 </html>
