@@ -176,6 +176,7 @@ function setLayers(testsRoutes){
 function checkboxEvent(checkboxElem, patientId){
   var layer;
   var heat;
+  var index
   for(l of layers){
     if(l.patientId == patientId){
       layer = l.layer;
@@ -190,11 +191,11 @@ function checkboxEvent(checkboxElem, patientId){
     mapLayers.push(layer);
     mapHeats.push(heat)
   }else{
-    const index = mapLayers.indexOf(layer);
+    index = mapLayers.indexOf(layer);
     if (index > -1) {
       mapLayers.splice(index, 1);
     }
-    const index = mapHeats.indexOf(heat);
+    index = mapHeats.indexOf(heat);
     if (index > -1) {
       mapHeats.splice(index, 1);
     }
