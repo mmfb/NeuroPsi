@@ -16,8 +16,9 @@ const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsL = document.getElementById("patientsL");
 
 var layers = [];
-
 var heats = [];
+var mapLayers = [];
+var mapHeats = [];
 
 
 window.onload = function(){
@@ -122,6 +123,24 @@ window.onload = function(){
   }
 }*/
 
+function showHeatmap(){
+  for(l of mapLayers){
+    map.removeLayer(l)
+  }
+  for(h of mapHeats){
+    h.addTo(map)
+  }
+}
+
+function showCircles(){
+  for(l of mapLayers){
+    l.addTo(map)
+  }
+  for(h of mapHeats){
+    map.removeLayer(h)
+  }
+}
+
 function getNeuroTestsRoutes(neuroId){
   $.ajax({
     url:"/api/neuros/"+neuroId+"/patients/tests/routes",
@@ -151,7 +170,6 @@ function setLayers(testsRoutes){
     layers.push({patientId: p.patientId, layer: layer});
     L.heatLayer(points, {radius: 25}).addTo(heat);
     heats.push({patientId: p.patientId, heat: heat});
-    
   }
 }
 
@@ -169,10 +187,17 @@ function checkboxEvent(checkboxElem, patientId){
     }
   }
   if (checkboxElem.checked) {
-    map.addLayer(layer);
+    mapLayers.push(layer);
+    mapHeats.push(heat)
   }else{
-    map.removeLayer(layer);
-    map.addLayer(heat)
+    const index = mapLayers.indexOf(layer);
+    if (index > -1) {
+      mapLayers.splice(index, 1);
+    }
+    const index = mapHeats.indexOf(heat);
+    if (index > -1) {
+      mapHeats.splice(index, 1);
+    }
   }
 }
 

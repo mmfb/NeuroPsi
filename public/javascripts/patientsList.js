@@ -19,25 +19,21 @@ window.onload = function(){
 function patientsHtmlInjection(patients){
     var str="";
     for(p of patients){
-        str+="<tr class = 'patientR' onclick = selectPatient("+p.patientId+")><td><img src='images/login pic.png'></td><td>"+p.patientId+"</td><td>"+p.name+
+        str+="<tr id = "+p.patientId+" onclick = selectPatient("+p.patientId+")><td><img src='images/login pic.png'></td><td>"+p.patientId+"</td><td>"+p.name+
         "</td><td>"+p.age+
-        "</td><td><div class='dropdown'><button onmouseover='disableOnclick()' onmouseout = 'enableOnclick("+p.patientId+")' class='dropbtn'>V</button><div class='dropContent'><a onclick = 'addTest("+p.attribId+")' href='#'>Marcar teste</a><a href='#'>Ver resultados</a><a href='#'>Ficha</a></div></div></td></tr>"
+        "</td><td><div class='dropdown'><button onmouseover='disableOnclick("+p.patientId+")' onmouseout = 'enableOnclick("+p.patientId+")' class='dropbtn'>V</button><div class='dropContent'><a onclick = 'addTest("+p.attribId+")' href='#'>Marcar teste</a><a href='#'>Ver resultados</a><a href='#'>Ficha</a></div></div></td></tr>"
     }
     patientsT.innerHTML = str;
 }
 
-function disableOnclick(){
-    var elements = document.getElementsByClassName('patientR');
-    for(e of elements){
-        e.onclick = null;
-    }
+function disableOnclick(patientId){
+    var elements = document.getElementById(patientId);
+    elements.onclick = null;
 }
 
 function enableOnclick(patientId){
-    var elements = document.getElementsByClassName('patientR');
-    for(e of elements){
-        e.onclick = selectPatient(patientId);
-    }
+    var elements = document.getElementById(patientId);
+    elements.onclick = selectPatient(patientId)
 }
 
 function addTest(attribId){

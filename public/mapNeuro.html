@@ -21,7 +21,14 @@
     <main>
         <div id="map"></div>
     </main>
-    <section><ul id="patientsL"></ul></section>
+    <section>
+        <nav>
+            <button onclick="showCircles()" type="button" id="circleBtn">Circulos</button>
+            <button onclick="showHeatmap()" type="button" id="heatmapBtn">Heatmap</button>
+        </nav>
+        <ul id="patientsL"><ul>
+
+        </section>
 </body>
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
@@ -32,5 +39,4 @@
 <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 <script src="javascripts/leaflet-heat.js"></script>
 <script src="javascripts/mapNeuro.js"></script>
-<script src="javascripts/navBars.js"></script>
 </html>

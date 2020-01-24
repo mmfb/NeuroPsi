@@ -1,6 +1,6 @@
 
 $("#loginBtn").click(function(){
-    var name = $("#email").val();
+    var name = $("#name").val();
     $.ajax({
         url: "/api/users/" + name,
         method: "get",
