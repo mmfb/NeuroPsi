@@ -12,42 +12,6 @@ module.exports.register = function(patients, callback, next){
     })
 }
 
-module.exports.searchPendingTests = function(patientId, callback, next){
-    mysql.getConnection(function(err, conn){
-        if(err){
-            callback(err, {code:500, status:"Error in the connection to the database"})
-            return;
-        }
-        conn.query("select attribId from Attribution where attrib_fileId = ?;", [patientId], function(err, result){
-            if(err){
-                callback(err, {code:500, status: "Error in a database query"})
-                return;
-            }
-            var attribId = [];
-            for(i of result){
-                attribId.push(i.attribId);
-            }
-            if(attribId.length > 0){
-                var values = ["Pending", attribId[0]]
-                var query="select * from Test where testState = ? and (test_attribId = ?";;
-                for(var i=1; i<attribId.length; i++){
-                    query += " or test_attribId = ?"
-                    values.push(attribId[i]);
-                }
-                query += ");";
-                conn.query(query, values, function(err, result){
-                    conn.release();
-                    if(err){
-                        callback(err, {code:500, status: "Error in a database query"});
-                        return;
-                    }
-                    callback(false, {code:200, status:"Ok", tests: result});
-                });
-            }   
-        })
-    })
-}
-
 module.exports.saveReplay = function(testId, coords, rec, callback, next){
     var routeId;
     var result;
@@ -82,7 +46,6 @@ module.exports.saveReplay = function(testId, coords, rec, callback, next){
                     }
                     routeId = result.insertId;
 
-                    console.log(routeId)
                     conn.query("insert into Result (rec, completedDate, result_testId) values (?,?,?);", [rec, new Date(), testId], function(err, result){
                         if(err){
                             callback(err, {code:500, status: "Error in a database query"})
@@ -139,13 +102,36 @@ module.exports.saveReplay = function(testId, coords, rec, callback, next){
     return routeId;
 }*/
 
+module.exports.cancelTest = function(testId, comment, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("update Test set testState = ? where testId = ?;", ["Canceled", testId], function(err){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"});
+                return;
+            }
+            conn.query("insert into Result (completedDate, comment, result_testId) values (?,?,?);", [new Date(), comment, testId], function(err){
+                conn.release();
+                if(err){
+                    callback(err, {code:500, status: "Error in a database query"});
+                    return;
+                }
+                callback(false, {code:200, status:"Ok"});
+            });
+        });
+    })
+}
+
 module.exports.getPatientTests = function(patientId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select testId, testState, assignedDate, completedDate, comment from Attribution inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ? order by assignedDate desc;",
+        conn.query("select testId, testState, assignedDate, name as neuro, attribId, completedDate, comment from User inner join Neuropsi on neuro_userId = userId inner join Attribution on attrib_neuroId = neuroId inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ? order by assignedDate desc;",
         [patientId], function(err, result){
             conn.release();
             if(err){
@@ -153,14 +139,8 @@ module.exports.getPatientTests = function(patientId, callback, next){
                 return;
             }
             for(t of result){
-                var formattedDate = t.assignedDate.getDate() + "-" + (t.assignedDate.getMonth() + 1) + "-" + t.assignedDate.getFullYear();
-                t.assignedDate = formattedDate;
-                if(t.completedDate){
-                    formattedDate = t.completedDate.getDate() + "-" + (t.completedDate.getMonth() + 1) + "-" + t.completedDate.getFullYear();
-                    t.completedDate = formattedDate;
-                }else{
-                    t.completedDate = "-";
-                }
+                t.assignedDate = convertDate(t.assignedDate);
+                t.completedDate = convertDate(t.completedDate);
                 if(!t.comment){
                     t.comment = "-";
                 }
@@ -168,6 +148,15 @@ module.exports.getPatientTests = function(patientId, callback, next){
             callback(false, {code:200, status:"Ok", tests: result});
         })
     })
+}
+
+function convertDate(date){
+    if(date){
+        var formattedDate = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+        return formattedDate;
+    }else{
+        return "-";
+    } 
 }
 
 /*function saveLocation(coords, callback){

@@ -48,6 +48,17 @@ thead{
     color: #f2f2f2;
 }
 
+td img{
+    width:30px;
+    height:30px;
+    vertical-align: middle;
+}
+
+tbody td{
+    height:40px;
+    min-width:30px;
+}
+
 tbody tr:nth-child(even){
     background-color: #eee;
 }

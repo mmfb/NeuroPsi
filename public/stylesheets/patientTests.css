@@ -41,6 +41,16 @@ thead{
     color: #f2f2f2;
 }
 
+#binDelete{
+    width:25px;
+    height:30px;
+    vertical-align: middle;
+}
+
+tbody tr{
+    height:40px;
+}
+
 tbody tr:nth-child(even){
     background-color: #eee;
 }

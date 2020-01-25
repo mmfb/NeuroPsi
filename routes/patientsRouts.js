@@ -59,4 +59,26 @@ router.get('/:patientId/tests/:testId/completed/replay', function(req, res, next
     })
 });
 
+router.post('/:patientId/tests/:testId/cancel', function(req, res, next){
+    patientsDAO.cancelTest(req.params.testId, req.body.comment, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.send({status: "Ok"});
+    }, next);
+});
+
+router.post('/:patientId/tests/:testId/file', function(req, res, next){
+    neuroDAO.fileTest(req.params.testId, req.body.comment, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.send({status: "Ok"});
+    }, next);
+});
+
 module.exports = router;

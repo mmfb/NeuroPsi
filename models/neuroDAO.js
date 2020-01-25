@@ -36,7 +36,7 @@ module.exports.getPatientInfo = function(patientId, callback, next){
     })
 }
 
-module.exports.postTest = function(attribId, callback, next){
+module.exports.scheduleTest = function(attribId, callback){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
@@ -86,14 +86,8 @@ module.exports.getNeuroPatientTests = function(attribId, callback, next){
                 return;
             }
             for(t of result){
-                var formattedDate = t.assignedDate.getDate() + "-" + (t.assignedDate.getMonth() + 1) + "-" + t.assignedDate.getFullYear();
-                t.assignedDate = formattedDate;
-                if(t.completedDate){
-                    formattedDate = t.completedDate.getDate() + "-" + (t.completedDate.getMonth() + 1) + "-" + t.completedDate.getFullYear();
-                    t.completedDate = formattedDate;
-                }else{
-                    t.completedDate = "-";
-                }
+                t.assignedDate = convertDate(t.assignedDate);
+                t.completedDate = convertDate(t.completedDate);
                 if(!t.comment){
                     t.comment = "-";
                 }
@@ -101,6 +95,15 @@ module.exports.getNeuroPatientTests = function(attribId, callback, next){
             callback(false, {code:200, status:"Ok", tests: result});
         })
     })
+}
+
+function convertDate(date){
+    if(date){
+        var formattedDate = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+        return formattedDate;
+    }else{
+        return "-";
+    } 
 }
 
 module.exports.getPatientRoutes = function(neuroId, patientId, callback, next){
@@ -122,7 +125,6 @@ module.exports.getPatientRoutes = function(neuroId, patientId, callback, next){
 }
 
 module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
-    console.log(neuroId)
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
@@ -152,5 +154,63 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
               }
             callback(false, {code:200, status:"Ok", routes: routes});
         })
+    })
+}
+
+module.exports.fileTest = function(testId, comment, callback){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("update Test set testState = ? where testId = ?;", ["Filed", testId], function(err){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"});
+                return;
+            }
+            conn.query("update Result set comment = ? where result_testId = ?;", [comment, testId], function(err){
+                conn.release();
+                if(err){
+                    callback(err, {code:500, status: "Error in a database query"});
+                    return;
+                }
+                callback(false, {code:200, status:"Ok"});
+            });
+        });
+    })
+}
+
+module.exports.rescheduleTest = function(testId, attribId, comment, callback){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("update Test set testState = ? where testId = ?;", ["Reschedule", testId], function(err){
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"});
+                return;
+            }
+            conn.query("update Result set comment = ? where result_testId = ?;", [comment, testId], function(err){
+                if(err){
+                    callback(err, {code:500, status: "Error in a database query"});
+                    return;
+                }
+                conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
+                    if(err){
+                        callback(err, {code:500, status: "Error in a database query"});
+                        return;
+                    }
+                    conn.query("insert into Reschedule (resched_testId, resched_newTestId) values (?,?)", [testId, result.insertId], function(err, result){
+                        conn.release();
+                        if(err){
+                            callback(err, {code:500, status: "Error in a database query"});
+                            return;
+                        }
+                        callback(false, {code:200, status:"Ok"});
+                    })
+                }); 
+            });
+        });
     })
 }

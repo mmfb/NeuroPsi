@@ -40,7 +40,6 @@ function enableOnclick(patientId, attribId){
 
 function selectPatient(patientId, attribId) {
     return function(){
-        alert(patientId+"/"+attribId);
         sessionStorage.setItem('patientId', patientId);
         sessionStorage.setItem('attribId', attribId);
         window.location = 'patientFile.html';

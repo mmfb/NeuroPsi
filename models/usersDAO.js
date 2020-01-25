@@ -14,7 +14,6 @@ module.exports.getUser = function(name, callback, next){
                 return;
             }
             var user = user[0];
-            console.log(user)
             callback(false, {code: 200, status:"Ok", user: user});
         })
     })

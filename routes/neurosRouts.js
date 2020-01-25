@@ -37,7 +37,18 @@ router.get('/:neuroId/patients/tests/routes', function(req, res, next){
 })
 
 router.post('/:neuroId/patients/:patientId/tests', function(req, res, next){
-    neuroDAO.postTest(req.body.attribId, function(err, result){
+    neuroDAO.scheduleTest(req.body.attribId, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.send({status: "ok"});
+    }, next);
+});
+
+router.post('/:neuroId/patients/:patientId/tests/:testId/reschedule', function(req, res, next){
+    neuroDAO.rescheduleTest(req.params.testId, req.body.attribId, req.body.comment, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
