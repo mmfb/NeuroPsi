@@ -36,6 +36,13 @@ thead{
     background-color: #868a94;
 }
 
+#testBtn{
+    width: 25px;
+    height: 25px;
+    padding: 3px;
+    vertical-align: middle;
+}
+
 #theader{
     background-color: #3b5998;
     color: #f2f2f2;

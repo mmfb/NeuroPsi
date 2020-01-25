@@ -1,7 +1,10 @@
 const patientId = parseInt(sessionStorage.getItem('patientId'));
 const neuroId = parseInt(sessionStorage.getItem('neuroId'));
+const attribId = parseInt(sessionStorage.getItem('attribId'));
 const testsT = document.getElementById("testsT");
 const patientInfoS = document.getElementById("patientInfoS");
+const testBtn = document.getElementById("testBtn");
+testBtn.onclick = scheduleTest;
 var patient;
 var tests;
 
@@ -15,7 +18,7 @@ window.onload = function(){
         }
     })
     $.ajax({
-        url: '/api/neuros/'+neuroId+'/patients/'+patientId+'/tests',
+        url: '/api/neuros/'+neuroId+'/attributions/'+attribId+'/patients/'+patientId+'/tests',
         mathod: 'get',
         success: function(result, status){
             tests = result.tests;
@@ -44,4 +47,18 @@ function testsHtmlInjection(tests){
 function openReplay(testId){
     sessionStorage.setItem("testId", testId);
     window.location = 'resultsNeuro.html';
+}
+
+function scheduleTest(){
+    $.ajax({
+        url:"/api/neuros/"+neuroId+"/patients/"+patientId+"/tests",
+        method:"post",
+        data: {attribId: attribId},
+        success: function(data, status){
+            alert("Teste marcado");
+        },
+        error: function(){
+            console.log("Error");
+        }
+    })
 }

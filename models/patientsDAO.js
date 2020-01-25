@@ -145,7 +145,7 @@ module.exports.getPatientTests = function(patientId, callback, next){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Attribution inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ?;",
+        conn.query("select testId, testState, assignedDate, completedDate, comment from Attribution inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ? order by assignedDate desc;",
         [patientId], function(err, result){
             conn.release();
             if(err){

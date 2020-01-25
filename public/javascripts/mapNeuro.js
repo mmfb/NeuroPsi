@@ -1,24 +1,53 @@
 
-var map = L.map('map').setView([38.7075175, -9.1528528], 16);
-var attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
-var tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const map = L.map('map').setView([38.7075175, -9.1528528], 16);
+const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
+const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-var tiles = L.tileLayer(tileUrl, {attribution});
+const tiles = L.tileLayer(tileUrl, {attribution});
 tiles.addTo(map);
 
-var options = {
+const options = {
   expand: "click",
   placeholder: "Procurar"
 }
-var geocoder = L.Control.geocoder(options).addTo(map);
+const geocoder = L.Control.geocoder(options).addTo(map);
 
 const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsL = document.getElementById("patientsL");
+const circlesS = document.getElementById("circlesS");
+const heatmapS = document.getElementById("heatmapS");
+
+circlesS.onchange = circlesToggleEvent;
+heatmapS.onchange = heatmapToggleEvent;
 
 var layers = [];
 var heats = [];
 var mapLayers = [];
 var mapHeats = [];
+
+function circlesToggleEvent(){
+  if(circlesS.checked){
+    for(l of mapLayers){
+      l.addTo(map);
+    }
+  }else{
+    for(l of mapLayers){
+      map.removeLayer(l);
+    }
+  }
+}
+
+function heatmapToggleEvent(){
+  if(heatmapS.checked){
+    for(h of mapHeats){
+      h.addTo(map);
+    }
+  }else{
+    for(h of mapHeats){
+      map.removeLayer(h);
+    }
+  }
+}
 
 
 window.onload = function(){
@@ -123,21 +152,15 @@ window.onload = function(){
   }
 }*/
 
-function showHeatmap(){
-  for(l of mapLayers){
-    map.removeLayer(l)
-  }
-  for(h of mapHeats){
-    h.addTo(map)
+function loadLayers(layers){
+  for(l of layers){
+    l.addTo(map);
   }
 }
 
-function showCircles(){
-  for(l of mapLayers){
-    l.addTo(map)
-  }
-  for(h of mapHeats){
-    map.removeLayer(h)
+function removeLayers(layers){
+  for(l of layers){
+    map.removeLayer(l)
   }
 }
 
@@ -191,6 +214,8 @@ function checkboxEvent(checkboxElem, patientId){
     mapLayers.push(layer);
     mapHeats.push(heat)
   }else{
+    map.removeLayer(layer)
+    map.removeLayer(heat)
     index = mapLayers.indexOf(layer);
     if (index > -1) {
       mapLayers.splice(index, 1);
@@ -200,6 +225,9 @@ function checkboxEvent(checkboxElem, patientId){
       mapHeats.splice(index, 1);
     }
   }
+  circlesToggleEvent();
+  heatmapToggleEvent();
+  
 }
 
 function loadHtmlRoutes(testsRoutes){

@@ -72,14 +72,14 @@ module.exports.getReplay = function(patientId, testId, callback, next){
     })
 }
 
-module.exports.getPatientTests = function(neuroId, patientId, callback, next){
+module.exports.getNeuroPatientTests = function(attribId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select distinct testId, testState, assignedDate, completedDate, comment from Test left outer join Result on testId = result_testId, File, Neuropsi where test_attribId in(select attribId from Attribution where attrib_fileId = ? and attrib_neuroId = ?);",
-        [patientId, neuroId], function(err, result){
+        conn.query("select testId, testState, assignedDate, completedDate, comment from Result right outer join Test on testId = result_testId inner join Attribution on test_attribId = attribId where attribId = ?;",
+        [attribId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a database query"});
