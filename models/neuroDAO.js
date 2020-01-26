@@ -214,3 +214,22 @@ module.exports.rescheduleTest = function(testId, attribId, comment, callback){
         });
     })
 }
+
+module.exports.getNeuroPatientsTestsByState = function(neuroId, testState, callback, next){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status: "Error in the connection to the database"})
+            return;
+        }
+        conn.query("select testId, testState, assignedDate, completedDate, comment from Result right outer join Test on testId = result_testId inner join Attribution on test_attribId = attribId where attrib_neuroId = ? and testState = ?", 
+        [neuroId, testState], function(err, result){
+            conn.release();
+            if(err){
+                callback(err, {code:500, status:"Error in a databse query"});
+                return;
+            }
+            callback(false, {code:200, status:"Ok", tests: result});
+        })
+    })
+}
+

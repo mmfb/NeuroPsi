@@ -1,4 +1,5 @@
-
+const badgeS = document.getElementById("badge");
+badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
 const map = L.map('map').setView([38.7075175, -9.1528528], 16);
 const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';

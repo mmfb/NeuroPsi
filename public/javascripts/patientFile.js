@@ -5,6 +5,9 @@ const testsT = document.getElementById("testsT");
 const patientInfoS = document.getElementById("patientInfoS");
 const testBtn = document.getElementById("testBtn");
 testBtn.onclick = scheduleTest;
+const badgeS = document.getElementById("badge");
+badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
+
 var patient;
 var tests;
 

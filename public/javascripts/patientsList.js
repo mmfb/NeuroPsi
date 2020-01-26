@@ -1,14 +1,28 @@
 const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsT = document.getElementById("patientsT");
+const badgeS = document.getElementById("badge");
 var patients;
 
 window.onload = function(){
+    var testState = "Completed";
     $.ajax({
         url:"/api/neuros/"+neuroId+"/patients",
         method:"get",
         success: function(result, status){
             patients = result.patients;
             patientsHtmlInjection(patients);
+        },
+        error: function(){
+            console.log("Error");
+        }
+    })
+
+    $.ajax({
+        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
+        method:"get",
+        success: function(result, status){
+            var teste = result.tests;
+            notifyHtmlInjection(teste.length)
         },
         error: function(){
             console.log("Error");
@@ -58,6 +72,11 @@ function scheduleTest(patientId, attribId){
             console.log("Error");
         }
     })
+}
+
+function notifyHtmlInjection(num){
+    badgeS.innerHTML = num;
+    sessionStorage.setItem("numCompletedTests", num);
 }
 
 

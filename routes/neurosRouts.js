@@ -58,4 +58,15 @@ router.post('/:neuroId/patients/:patientId/tests/:testId/reschedule', function(r
     }, next);
 });
 
+router.get('/:neuroId/patients/tests/state/:testState', function(req, res, next){
+    neuroDAO.getNeuroPatientsTestsByState(req.params.neuroId, req.params.testState, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.status(200).send(result);
+    }, next);
+})
+
 module.exports = router;

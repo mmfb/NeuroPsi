@@ -2,6 +2,8 @@ const testId = parseInt(sessionStorage.getItem("testId"))
 const patientId = parseInt(sessionStorage.getItem("patientId"));
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
+const badgeS = document.getElementById("badge");
+badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
 
 window.onload = function(){
     context.canvas.width  = window.innerWidth*0.99;
