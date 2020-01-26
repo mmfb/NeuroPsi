@@ -130,8 +130,8 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, MAX(testId) as testId, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neuroId = ? and testState = ? group by routeId order by patientId;", 
-        [neuroId, "Completed"], function(err, result){
+        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, MAX(testId) as testId, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neuroId = ? and (testState = ? or testState = ?) group by routeId order by patientId;", 
+        [neuroId, "Completed", "Filed"], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a databse query"});
