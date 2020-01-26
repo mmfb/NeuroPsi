@@ -31,3 +31,12 @@ body{
     background-color: #ddd;
     color:#000;
 }
+
+#badge {
+    position: relative;
+    top: -10px;
+    padding: 5px 10px;
+    border-radius: 50%;
+    background: red;
+    color: white;
+  }
