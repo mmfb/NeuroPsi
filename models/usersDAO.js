@@ -7,7 +7,7 @@ module.exports.getUser = function(name, callback, next){
             callback(err, {code:500, status: "Error in the connection to the database"});
             return
         }
-        conn.query("select * from User left join Patient on userId = patient_userId left join Neuropsi on userId = neuro_userId where name = ?", [name], function(err, user){
+        conn.query("select userId, name, sex, email, birthdate, coords, patientId, neuroId from Location inner join User on user_locId = locId left join Patient on userId = patient_userId left join Neuropsi on userId = neuro_userId where name = ?", [name], function(err, user){
             conn.release();
             if (err){
                 callback(err, {code:500, status: "Error in a database query"});

@@ -130,8 +130,8 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neuroId = ? group by routeId order by patientId;", 
-        [neuroId], function(err, result){
+        conn.query("select MAX(attrib_fileId) as patientId, MAX(name) as name, MAX(testId) as testId, count(routeId) as repetitions, coords, waypoints, time, distance from Location inner join Route on route_locId = locId inner join Test on test_routeId = routeId inner join Attribution on test_attribId = attribId inner join Patient on attrib_fileId = patientId inner join User on patient_userId = userId where attrib_neuroId = ? and testState = ? group by routeId order by patientId;", 
+        [neuroId, "Completed"], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status:"Error in a databse query"});
@@ -146,7 +146,7 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
                   var patientId = splice[0].patientId;
                   var name = splice[0].name;
                   for(r of splice){
-                      patientRoutes.push({repetitions: r.repetitions, coords: r.coords, waypoints: r.waypoints, time: r.time, distance: r.distance})
+                      patientRoutes.push({testId: r.testId, repetitions: r.repetitions, coords: r.coords, waypoints: r.waypoints, time: r.time, distance: r.distance})
                   }
                   routes.push({patientId: patientId, name: name, routes: patientRoutes});
                   i=-1;
@@ -230,6 +230,23 @@ module.exports.getNeuroPatientsTestsByState = function(neuroId, testState, callb
             }
             callback(false, {code:200, status:"Ok", tests: result});
         })
+    })
+}
+
+module.exports.saveRoutes = function(testId, waypoints, time, distance, callback){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        conn.query("update Route set waypoints=?, time=?, distance=? where routeId in (select test_routeId from Test where testId = ?);", [waypoints, time, distance, testId], function(err, result){
+            conn.release();
+            if(err){
+                callback(err, {code:500, status: "Error in a database query"});
+                return;
+            }
+            callback(false, {code:200, status:"Ok"});
+        });
     })
 }
 

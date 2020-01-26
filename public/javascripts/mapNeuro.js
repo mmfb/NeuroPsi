@@ -1,6 +1,6 @@
 const badgeS = document.getElementById("badge");
 badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
-const map = L.map('map').setView([38.7075175, -9.1528528], 16);
+const map = L.map('map').setView([38.7075175, -9.1528528], 12);
 const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
@@ -17,6 +17,7 @@ const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsL = document.getElementById("patientsL");
 const circlesS = document.getElementById("circlesS");
 const heatmapS = document.getElementById("heatmapS");
+const neuroCoords = JSON.parse(sessionStorage.getItem("neuroCoords"));
 
 circlesS.onchange = circlesToggleEvent;
 heatmapS.onchange = heatmapToggleEvent;
@@ -25,6 +26,16 @@ var layers = [];
 var heats = [];
 var mapLayers = [];
 var mapHeats = [];
+
+var testId;
+var patientId;
+
+var routeControl;
+
+window.onload = function(){
+  L.marker([neuroCoords.y, neuroCoords.x]).addTo(map);
+  getNeuroTestsRoutes(neuroId);
+}
 
 function circlesToggleEvent(){
   if(circlesS.checked){
@@ -48,11 +59,6 @@ function heatmapToggleEvent(){
       map.removeLayer(h);
     }
   }
-}
-
-
-window.onload = function(){
-  getNeuroTestsRoutes(neuroId);
 }
 
 /*$.getJSON("https://nominatim.openstreetmap.org/search/alges%20Portugal?format=json", function(data){
@@ -100,58 +106,7 @@ routeControl.on('routesfound', function(e) {
         console.log("Error");
     }
   })
-});
-
-
-window.onload = function(){
-  L.marker([38.720356, -9.131448]).addTo(map);
-  var circle = L.circle([38.770611, -9.10697], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 220
-}).addTo(map);
-
-  $.ajax({
-    url:"/api/neuros/"+2+"/patients/"+2+"/routes",
-    method:"get",
-    success: function(result, status){
-      var routes = result.routes;
-      var waypoints = JSON.parse(routes[0].waypoints);
-      var polyline = L.polyline(waypoints, {color: 'blue'}).addTo(map);
-      // zoom the map to the polyline
-      map.fitBounds(polyline.getBounds());
-    },
-    error: function(){
-        console.log("Error");
-    }
-  })
-}*/
-
-/*function loadMarkers(markers){
-  for(m of markers){
-    L.marker(m.latLng)
-      .addTo(map)
-      .bindPopup("Paciente")
-      .on('mouseover', function(e){
-        this.openPopup()
-      })
-      .on('mouseout', function(e){
-        this.closePopup()
-      });
-    if('item' in m){
-      L.circle(m.latLng, m.icon)
-      .addTo(map)
-      .bindPopup("Total poupado")
-      .on('mouseover', function(e){
-        this.openPopup()
-      })
-      .on('mouseout', function(e){
-        this.closePopup()
-      });
-    }
-  }
-}*/
+});*/
 
 function loadLayers(layers){
   for(l of layers){
@@ -171,6 +126,7 @@ function getNeuroTestsRoutes(neuroId){
     method:"get",
     success: function(result, status){
       var testsRoutes = result.routes;
+      checkIfRoutesExist(neuroCoords, testsRoutes)
       setLayers(testsRoutes);
       loadHtmlRoutes(testsRoutes);
     },
@@ -183,6 +139,7 @@ function getNeuroTestsRoutes(neuroId){
 function setLayers(testsRoutes){
   var item = {color: 'blue', fillColor: 'blue', fillOpacity: 0.5, radius: 100}
   for(p of testsRoutes){
+    var route = L.featureGroup();
     var layer = L.featureGroup();
     var heat = L.featureGroup();
     var points = [];
@@ -190,8 +147,11 @@ function setLayers(testsRoutes){
       item.radius = r.repetitions*100;
       L.circle([r.coords.y, r.coords.x], item).addTo(layer).bindPopup("Tempo poupado: "+r.time).on('mouseover', function(e){this.openPopup()});
       points.push([r.coords.y, r.coords.x, r.repetitions*10]);
+      if(r.waypoints){
+        L.polyline(JSON.parse(r.waypoints), {color: 'yellow'}).addTo(route);
+      }
     }
-    layers.push({patientId: p.patientId, layer: layer});
+    layers.push({patientId: p.patientId, layer: layer, route: route});
     L.heatLayer(points, {radius: 25}).addTo(heat);
     heats.push({patientId: p.patientId, heat: heat});
   }
@@ -199,11 +159,13 @@ function setLayers(testsRoutes){
 
 function checkboxEvent(checkboxElem, patientId){
   var layer;
+  var route;
   var heat;
   var index
   for(l of layers){
     if(l.patientId == patientId){
       layer = l.layer;
+      route = l.route;
     }
   }
   for(h of heats){
@@ -213,18 +175,18 @@ function checkboxEvent(checkboxElem, patientId){
   }
   if (checkboxElem.checked) {
     mapLayers.push(layer);
-    mapHeats.push(heat)
+    mapLayers.push(route);
+    mapHeats.push(heat);
   }else{
     map.removeLayer(layer)
+    map.removeLayer(route)
     map.removeLayer(heat)
     index = mapLayers.indexOf(layer);
-    if (index > -1) {
-      mapLayers.splice(index, 1);
-    }
+    mapLayers.splice(index, 1);
+    index = mapLayers.indexOf(route)
+    mapLayers.splice(index, 1)
     index = mapHeats.indexOf(heat);
-    if (index > -1) {
-      mapHeats.splice(index, 1);
-    }
+    mapHeats.splice(index, 1);
   }
   circlesToggleEvent();
   heatmapToggleEvent();
@@ -239,20 +201,60 @@ function loadHtmlRoutes(testsRoutes){
   patientsL.innerHTML = str;
 }
 
-//str += "<li>"+r.patientId+": "+r.name+"<input type='checkbox' onchange='checkboxEvent(this,\""+JSON.stringify(r.routes).replace(/\"/g,"\\\"")+"\")'></li>";
-
-/*function loadHtmlRoutes(routes){
-  str = "";
-  for(i=0; i<routes.length; i++){
-    if(!routes[i+1] || routes[i+1].patientId != routes[i].patientId){
-      str += "<li>"+routes[i].patientId+": "+routes[i].name+"<input type='checkbox' onchange='checkboxEvent(this,\"";
-      var patientRoutes = routes.splice(0,i+1);
-      console.log(JSON.stringify(patientRoutes));
-      str += JSON.stringify(patientRoutes).replace(/\"/g,"\\\"")+"\")'></li>";
-      i=-1;
+function checkIfRoutesExist(neuroCoords, testsRoutes){
+  for(t of testsRoutes){
+    for(r of t.routes){
+      if(r.waypoints){
+      }else{
+        if(r.coords){
+          testId = r.testId;
+          patientId = t.patientId;
+          routeControl = L.Routing.control({
+            waypoints: [
+              L.latLng(neuroCoords.y, neuroCoords.x),
+              L.latLng(r.coords.y, r.coords.x)
+            ],
+            show: false,
+            routeWhileDragging: false,
+            addWaypoints: false,
+            draggableWaypoints: false,
+            lineOptions: {
+              styles: [{color: 'black', opacity: 0.15, weight: 9},
+              {color: 'white',opacity: 0.8, weight: 6},
+              {color: 'orange', opacity: 1, weight: 2}]}
+          }).addTo(map);
+    
+          routeControl.on('routesfound', function(e) {
+            var routes = e.routes;
+            var summary = routes[0].summary;
+            var latlngs = e.routes[0].coordinates;
+            var time = Math.round(summary.totalTime % 3600 / 60);
+            var distance = summary.totalDistance / 1000;
+            alert('Total distance is ' + distance + ' km and total time is ' + time + ' minutes');
+            var waypoints = []
+            for (i of latlngs){
+              waypoints.push([i.lat, i.lng]);
+            }
+            saveRoute(patientId, testId, waypoints, time, distance);
+          });
+        }
+      }
     }
   }
-  patientsL.innerHTML = str;
-}*/
+}
+
+function saveRoute(patientId, testId, waypoints, time, distance){
+  $.ajax({
+    url:"/api/patients/"+patientId+"/tests/"+testId+"/routes",
+    method:"post",
+    data: {waypoints: JSON.stringify(waypoints), time: time, distance: distance},
+    success: function(data, status){
+        alert("Route guadada");
+    },
+    error: function(){
+        console.log("Error");
+    }
+  })
+}
 
 

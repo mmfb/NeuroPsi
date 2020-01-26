@@ -81,4 +81,15 @@ router.post('/:patientId/tests/:testId/file', function(req, res, next){
     }, next);
 });
 
+router.post('/:patientId/tests/:testId/routes', function(req, res, next){
+    neuroDAO.saveRoutes(req.params.testId, req.body.waypoints, req.body.time, req.body.distance, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.send({status: "Ok"});
+    }, next);
+});
+
 module.exports = router;

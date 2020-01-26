@@ -42,6 +42,8 @@ function success(position){
 
 function error(err) {
     console.warn('ERROR(' + err.code + '): ' + err.message);
+    patientLocation = JSON.parse(sessionStorage.getItem("patientCoords"));
+    coords = {lat: patientLocation.y, lng: patientLocation.x}
 };
 
 function imgAnimation(img){
