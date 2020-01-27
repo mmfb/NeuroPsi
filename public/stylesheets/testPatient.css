@@ -12,8 +12,13 @@ main{
 
 form{
     position: absolute;
-    top: 45%;
-    left: calc(47%);
+    bottom: 5%;
+    left: 45%;
+}
+
+form input{
+    width:60px;
+    height:30px;
 }
 
 .btn:link,

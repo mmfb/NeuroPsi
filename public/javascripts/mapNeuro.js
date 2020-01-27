@@ -1,5 +1,4 @@
 const badgeS = document.getElementById("badge");
-badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
 const map = L.map('map').setView([38.7075175, -9.1528528], 12);
 const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -33,6 +32,7 @@ var patientId;
 var routeControl;
 
 window.onload = function(){
+  updateNotify("Completed")
   L.marker([neuroCoords.y, neuroCoords.x]).addTo(map);
   getNeuroTestsRoutes(neuroId);
 }
@@ -125,7 +125,7 @@ function getNeuroTestsRoutes(neuroId){
     url:"/api/neuros/"+neuroId+"/patients/tests/routes",
     method:"get",
     success: function(result, status){
-      var testsRoutes = result.routes;
+      var testsRoutes = result.testsRoutes;
       checkIfRoutesExist(neuroCoords, testsRoutes)
       setLayers(testsRoutes);
       loadHtmlRoutes(testsRoutes);
@@ -138,22 +138,22 @@ function getNeuroTestsRoutes(neuroId){
 
 function setLayers(testsRoutes){
   var item = {color: 'blue', fillColor: 'blue', fillOpacity: 0.5, radius: 100}
-  for(p of testsRoutes){
+  for(t of testsRoutes){
     var route = L.featureGroup();
     var layer = L.featureGroup();
     var heat = L.featureGroup();
     var points = [];
-    for(r of p.routes){
-      item.radius = r.repetitions*100;
-      L.circle([r.coords.y, r.coords.x], item).addTo(layer).bindPopup("Tempo poupado: "+r.time).on('mouseover', function(e){this.openPopup()});
-      points.push([r.coords.y, r.coords.x, r.repetitions*10]);
-      if(r.waypoints){
-        L.polyline(JSON.parse(r.waypoints), {color: 'yellow'}).addTo(route);
+    for(p of t.patientRoutes){
+      item.radius = p.repetitions*p.time*10;
+      L.circle([p.coords.y, p.coords.x], item).addTo(layer).bindPopup("Tempo poupado: "+p.time+" min").on('mouseover', function(e){this.openPopup()});
+      points.push([p.coords.y, p.coords.x, p.repetitions*10]);
+      if(p.waypoints){
+        L.polyline(JSON.parse(p.waypoints), {color: 'yellow'}).addTo(route);
       }
     }
-    layers.push({patientId: p.patientId, layer: layer, route: route});
+    layers.push({patientId: t.patientId, layer: layer, route: route});
     L.heatLayer(points, {radius: 25}).addTo(heat);
-    heats.push({patientId: p.patientId, heat: heat});
+    heats.push({patientId: t.patientId, heat: heat});
   }
 }
 
@@ -203,16 +203,16 @@ function loadHtmlRoutes(testsRoutes){
 
 function checkIfRoutesExist(neuroCoords, testsRoutes){
   for(t of testsRoutes){
-    for(r of t.routes){
-      if(r.waypoints){
+    for(p of t.patientRoutes){
+      if(p.waypoints){
       }else{
-        if(r.coords){
-          testId = r.testId;
+        if(p.coords){
+          testId = p.testId;
           patientId = t.patientId;
           routeControl = L.Routing.control({
             waypoints: [
               L.latLng(neuroCoords.y, neuroCoords.x),
-              L.latLng(r.coords.y, r.coords.x)
+              L.latLng(p.coords.y, p.coords.x)
             ],
             show: false,
             routeWhileDragging: false,
@@ -254,6 +254,24 @@ function saveRoute(patientId, testId, waypoints, time, distance){
     error: function(){
         console.log("Error");
     }
+  })
+}
+
+function notifyHtmlInjection(num){
+  badgeS.innerHTML = num;
+}
+
+function updateNotify(testState){
+  $.ajax({
+      url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
+      method:"get",
+      success: function(result, status){
+          var teste = result.tests;
+          notifyHtmlInjection(teste.length)
+      },
+      error: function(){
+          console.log("Error");
+      }
   })
 }
 

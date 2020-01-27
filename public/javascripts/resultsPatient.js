@@ -12,7 +12,7 @@ window.onload = function(){
    context.canvas.height = window.innerHeight*0.90;
     
     $.ajax({
-        url: "/api/patients/"+patientId+"/tests/"+testId+"/completed/replay",
+        url: "/api/patients/"+patientId+"/tests/"+testId+"/replay",
         method: "get",
         success: function(result, status){
             if(result){

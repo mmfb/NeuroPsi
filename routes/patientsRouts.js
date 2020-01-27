@@ -4,7 +4,7 @@ var neuroDAO = require('../models/neuroDAO');
 var patientsDAO = require('../models/patientsDAO');
 
 router.get('/:patientId', function(req, res, next){
-    neuroDAO.getPatientInfo(req.params.patientId, function(err, result){
+    neuroDAO.getPatient(req.params.patientId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -48,8 +48,8 @@ router.post('/:patientId/tests/:testId/replay', function(req, res, next){
     }, next);
 });
 
-router.get('/:patientId/tests/:testId/completed/replay', function(req, res, next) {
-    neuroDAO.getReplay(req.params.patientId, req.params.testId, function(err, result){
+router.get('/:patientId/tests/:testId/replay', function(req, res, next) {
+    neuroDAO.getReplay(req.params.testId, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

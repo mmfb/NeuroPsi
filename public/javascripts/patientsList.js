@@ -4,25 +4,13 @@ const badgeS = document.getElementById("badge");
 var patients;
 
 window.onload = function(){
-    var testState = "Completed";
+    updateNotify("Completed")
     $.ajax({
         url:"/api/neuros/"+neuroId+"/patients",
         method:"get",
         success: function(result, status){
             patients = result.patients;
             patientsHtmlInjection(patients);
-        },
-        error: function(){
-            console.log("Error");
-        }
-    })
-
-    $.ajax({
-        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
-        method:"get",
-        success: function(result, status){
-            var teste = result.tests;
-            notifyHtmlInjection(teste.length)
         },
         error: function(){
             console.log("Error");
@@ -76,7 +64,21 @@ function scheduleTest(patientId, attribId){
 
 function notifyHtmlInjection(num){
     badgeS.innerHTML = num;
-    sessionStorage.setItem("numCompletedTests", num);
+    sessionStorage.setItem("notify", num)
+}
+
+function updateNotify(testState){
+    $.ajax({
+        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
+        method:"get",
+        success: function(result, status){
+            var teste = result.tests;
+            notifyHtmlInjection(teste.length)
+        },
+        error: function(){
+            console.log("Error");
+        }
+    })
 }
 
 

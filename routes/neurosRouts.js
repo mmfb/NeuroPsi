@@ -14,7 +14,7 @@ router.get('/:neuroId/patients', function(req, res, next){
     }, next);
 });
 
-router.get('/:neuroId/attributions/:attribId/patients/:patientId/tests', function(req, res, next){
+router.get('/:neuroId/attributions/:attribId/tests', function(req, res, next){
     neuroDAO.getNeuroPatientTests(req.params.attribId, function(err, result){
         if(err){
             res.statusMessage = result.status;

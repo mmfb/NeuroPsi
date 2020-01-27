@@ -6,7 +6,7 @@ module.exports.getNeuroPatients = function(neuroId, callback, next){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select patientId, name, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
+        conn.query("select patientId, name, sex, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
         [neuroId], function(err, result){
             conn.release();
             if(err){
@@ -18,13 +18,13 @@ module.exports.getNeuroPatients = function(neuroId, callback, next){
     })
 };
 
-module.exports.getPatientInfo = function(patientId, callback, next){
+module.exports.getPatient = function(patientId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select patientId, name, sex, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age from User, Patient where patientId = ? and patient_userId = userId;",
+        conn.query("select patientId, name, sex, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId from Location inner join User on user_locId=locId inner join Patient on patient_userId=userId where patientId = ?;",
         [patientId], function(err, result){
             conn.release();
             if(err){
@@ -53,7 +53,7 @@ module.exports.scheduleTest = function(attribId, callback){
     })
 }
 
-module.exports.getReplay = function(patientId, testId, callback, next){
+module.exports.getReplay = function(testId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
@@ -106,24 +106,6 @@ function convertDate(date){
     } 
 }
 
-module.exports.getPatientRoutes = function(neuroId, patientId, callback, next){
-    mysql.getConnection(function(err, conn){
-        if(err){
-            callback(err, {code:500, status: "Error in the connection to the database"})
-            return;
-        }
-        conn.query("select waypoints, time, distance from Route where route_testId in (select testId from Test where test_attribId in (Select attribId from Attribution where attrib_fileId = ? and attrib_neuroId = ?));", [patientId, neuroId], function(err, result){
-            conn.release();
-            if(err){
-                callback(err, {code:500, status:"Error in a databse query"});
-                return;
-            }
-            var routes = result;
-            callback(false, {code:200, status:"Ok", routes: routes});
-        })
-    })
-}
-
 module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
@@ -137,7 +119,7 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
                 callback(err, {code:500, status:"Error in a databse query"});
                 return;
             }
-            var routes = [];
+            var testsRoutes = [];
 
             for(i=0; i<result.length; i++){
                 if(!result[i+1] || result[i+1].patientId != result[i].patientId){
@@ -148,11 +130,11 @@ module.exports.getNeuroTestsRoutes = function(neuroId, callback, next){
                   for(r of splice){
                       patientRoutes.push({testId: r.testId, repetitions: r.repetitions, coords: r.coords, waypoints: r.waypoints, time: r.time, distance: r.distance})
                   }
-                  routes.push({patientId: patientId, name: name, routes: patientRoutes});
+                  testsRoutes.push({patientId: patientId, name: name, patientRoutes: patientRoutes});
                   i=-1;
                 }
               }
-            callback(false, {code:200, status:"Ok", routes: routes});
+            callback(false, {code:200, status:"Ok", testsRoutes: testsRoutes});
         })
     })
 }

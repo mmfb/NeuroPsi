@@ -12,7 +12,7 @@ module.exports.register = function(patients, callback, next){
     })
 }
 
-module.exports.saveReplay = function(testId, coords, rec, callback, next){
+module.exports.saveReplay = function(testId, coords, rec, callback){
     var routeId;
     var result;
     var locId;
@@ -65,42 +65,6 @@ module.exports.saveReplay = function(testId, coords, rec, callback, next){
         }
     })
 }
-
-/*function getRouteId(testId, coords, callback){
-    var routeId;
-    var locId;
-    mysql.getConnection(function(err, conn){
-        if(err){
-            callback(err, {code:500, status:"Error in the connection to the database"})
-            return;
-        }
-        console.log(coords.lng +"/"+ coords.lat)
-        conn.query("select locId, routeId, ST_Distance_Sphere(coords, point(?,?)) as distance from Location inner join Route on route_locId = locId inner join test on test_routeId = routeId where test_attribId in (select attribId from Attribution, Test where test_attribId = attribId and testId = ?) order by distance limit 0,1;",
-        [coords.lng, coords.lat, testId], function(err, result){
-            if(err){
-                callback(err, {code:500, status: "EEEError in a database query"})
-                return;
-            }
-            locId = result[0];
-            console.log("Result: "+result);
-        });
-        if(result[0] && result[0].distance < 1000){
-            routeId = result[0].routeId;
-        }else{
-            var locId = saveLocation(coords, callback);
-
-            conn.query("insert into Route (route_locId) values (?); select LAST_INSERT_ID();", [locId], function(err, result){
-                conn.release();
-                if(err){
-                    callback(err, {code:500, status: "Error in a database query"})
-                    return;
-                }
-                routeId = result[0];
-            });
-        }
-    });
-    return routeId;
-}*/
 
 module.exports.cancelTest = function(testId, comment, callback, next){
     mysql.getConnection(function(err, conn){

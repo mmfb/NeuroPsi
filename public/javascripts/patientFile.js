@@ -6,12 +6,12 @@ const patientInfoS = document.getElementById("patientInfoS");
 const testBtn = document.getElementById("testBtn");
 testBtn.onclick = scheduleTest;
 const badgeS = document.getElementById("badge");
-badgeS.innerHTML = parseInt(sessionStorage.getItem("numCompletedTests"))
 
 var patient;
 var tests;
 
 window.onload = function(){
+    updateNotify("Completed")
     $.ajax({
         url: '/api/patients/'+patientId,
         method: 'get',
@@ -20,14 +20,7 @@ window.onload = function(){
             patientInfoHtmlInjection(patient);
         }
     })
-    $.ajax({
-        url: '/api/neuros/'+neuroId+'/attributions/'+attribId+'/patients/'+patientId+'/tests',
-        mathod: 'get',
-        success: function(result, status){
-            tests = result.tests;
-            testsHtmlInjection(tests);
-        }
-    })
+    getNeuroPatientTests(attribId) 
 }
 
 function patientInfoHtmlInjection(patient){
@@ -102,7 +95,7 @@ function openTest(testId, testState) {
     return function(){
         sessionStorage.setItem("testId", testId)
         sessionStorage.setItem("attribId", attribId)
-        if(testState == "Completed"){
+        if(testState == "Completed" || testState == "Filed"){
             window.location = 'resultsNeuro.html'
         } 
     };
@@ -138,4 +131,33 @@ function rescheduleTest(testId){
             }
         })
     }
+}
+
+function getNeuroPatientTests(attribId){
+    $.ajax({
+        url: '/api/neuros/'+neuroId+'/attributions/'+attribId+'/tests',
+        mathod: 'get',
+        success: function(result, status){
+            tests = result.tests;
+            testsHtmlInjection(tests);
+        }
+    })
+}
+
+function notifyHtmlInjection(num){
+    badgeS.innerHTML = num;
+}
+
+function updateNotify(testState){
+    $.ajax({
+        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
+        method:"get",
+        success: function(result, status){
+            var teste = result.tests;
+            notifyHtmlInjection(teste.length)
+        },
+        error: function(){
+            console.log("Error");
+        }
+    })
 }
