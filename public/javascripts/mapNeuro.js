@@ -126,7 +126,7 @@ function getNeuroTestsRoutes(neuroId){
     method:"get",
     success: function(result, status){
       var testsRoutes = result.testsRoutes;
-      checkIfRoutesExist(neuroCoords, testsRoutes)
+      //checkIfRoutesExist(neuroCoords, testsRoutes)
       setLayers(testsRoutes);
       loadHtmlRoutes(testsRoutes);
     },
@@ -201,7 +201,7 @@ function loadHtmlRoutes(testsRoutes){
   patientsL.innerHTML = str;
 }
 
-function checkIfRoutesExist(neuroCoords, testsRoutes){
+/*function checkIfRoutesExist(neuroCoords, testsRoutes){
   for(t of testsRoutes){
     for(p of t.patientRoutes){
       if(p.waypoints){
@@ -241,7 +241,7 @@ function checkIfRoutesExist(neuroCoords, testsRoutes){
       }
     }
   }
-}
+}*/
 
 function saveRoute(patientId, testId, waypoints, time, distance){
   $.ajax({
