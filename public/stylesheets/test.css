@@ -1,0 +1,34 @@
+main{
+    height: 86vh;
+    margin: 80px 20px 20px 20px;
+    display: grid;
+    grid-template-areas: 
+        'header header header header'
+        'tests tests tests patients'
+        'tests tests tests patients'
+        'tests tests tests statistics'
+        'tests tests tests statistics';
+    grid-gap: 10px;
+}
+
+main > section {
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    text-align: center;
+    font-size: 30px;
+  }
+
+#header{
+    grid-area: header;
+}
+
+#tests{
+    grid-area: tests;
+}
+
+#patients{
+    grid-area: patients;
+}
+
+#statistics{
+    grid-area: statistics;
+}

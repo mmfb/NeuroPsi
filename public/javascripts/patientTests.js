@@ -1,6 +1,5 @@
 const patientId = parseInt(sessionStorage.getItem('patientId'));
 const testsT = document.getElementById("testsT");
-const badgeS = document.getElementById("badge");
 var patient;
 var tests;
 
@@ -18,7 +17,6 @@ window.onload = function(){
         method: 'get',
         success: function(result){
             tests = result.tests;
-            notifyHtmlInjection(tests);
             testsHtmlInjection(tests);
         }
     })
@@ -82,15 +80,4 @@ function openTest(testId, testState, attribId) {
             window.location = 'resultsPatient.html'
         } 
     };
-}
-
-function notifyHtmlInjection(tests){
-    var count = 0;
-    for(t of tests){
-        if(t.testState == "Pending"){
-            count += 1;
-        }
-    }
-    badgeS.innerHTML = count;
-    sessionStorage.setItem("numPendingTests", count);
 }

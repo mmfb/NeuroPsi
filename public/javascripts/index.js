@@ -10,6 +10,7 @@ $("#loginBtn").click(function(){
             if(!result.user){
                 alert("Esse utilizador não existe");
             }else{
+                sessionStorage.setItem("userId", result.user.userId)
                 if(result.user.patientId != null){
                     sessionStorage.setItem("patientId", result.user.patientId);
                     sessionStorage.setItem("patientCoords", JSON.stringify(result.user.coords))

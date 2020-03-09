@@ -1,10 +1,8 @@
 const neuroId = parseInt(sessionStorage.getItem("neuroId"));
 const patientsT = document.getElementById("patientsT");
-const badgeS = document.getElementById("badge");
 var patients;
 
 window.onload = function(){
-    updateNotify("Completed")
     $.ajax({
         url:"/api/neuros/"+neuroId+"/patients",
         method:"get",
@@ -62,24 +60,7 @@ function scheduleTest(patientId, attribId){
     })
 }
 
-function notifyHtmlInjection(num){
-    badgeS.innerHTML = num;
-    sessionStorage.setItem("notify", num)
-}
 
-function updateNotify(testState){
-    $.ajax({
-        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
-        method:"get",
-        success: function(result, status){
-            var teste = result.tests;
-            notifyHtmlInjection(teste.length)
-        },
-        error: function(){
-            console.log("Error");
-        }
-    })
-}
 
 
 

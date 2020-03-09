@@ -122,22 +122,3 @@ function convertDate(date){
         return "-";
     } 
 }
-
-/*function saveLocation(coords, callback){
-    mysql.getConnection(function(err, conn){
-        if(err){
-            callback(err, {code:500, status:"Error in the connection to the database"})
-            return;
-        }
-        conn.query("insert into Location (coords) values (point(?,?));", [coords.lng, coords.lat], function(err, result){
-            if(err){
-                callback(err, {code:500, status:"Error in a database query"})
-                return;
-            }
-            console.log("1 "+result.insertId)
-            var locId = result.insertId;
-            console.log("2 "+locId);
-            return locId
-        })
-    })
-}*/

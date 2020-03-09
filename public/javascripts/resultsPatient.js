@@ -3,9 +3,6 @@ const patientId = parseInt(sessionStorage.getItem("patientId"));
 const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 
-const numPendingTest = parseInt(sessionStorage.getItem("numPendingTests"))
-const badgeS = document.getElementById("badge");
-badgeS.innerHTML = numPendingTest;
 
 window.onload = function(){
     context.canvas.width  = window.innerWidth*0.99;

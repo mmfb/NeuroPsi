@@ -6,7 +6,7 @@ module.exports.getNeuroPatients = function(neuroId, callback, next){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select patientId, name, sex, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
+        conn.query("select userId, patientId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
         [neuroId], function(err, result){
             conn.release();
             if(err){
@@ -24,7 +24,7 @@ module.exports.getPatient = function(patientId, callback, next){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("select patientId, name, sex, email, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId from Location inner join User on user_locId=locId inner join Patient on patient_userId=userId where patientId = ?;",
+        conn.query("select userId, patientId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId from Location inner join User on user_locId=locId inner join Patient on patient_userId=userId where patientId = ?;",
         [patientId], function(err, result){
             conn.release();
             if(err){
@@ -231,4 +231,5 @@ module.exports.saveRoutes = function(testId, waypoints, time, distance, callback
         });
     })
 }
+
 

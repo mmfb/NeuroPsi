@@ -1,4 +1,3 @@
-const badgeS = document.getElementById("badge");
 const map = L.map('map').setView([38.7075175, -9.1528528], 12);
 const attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors";
 const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -32,7 +31,6 @@ var patientId;
 var routeControl;
 
 window.onload = function(){
-  updateNotify("Completed")
   L.marker([neuroCoords.y, neuroCoords.x]).addTo(map);
   getNeuroTestsRoutes(neuroId);
 }
@@ -254,24 +252,6 @@ function saveRoute(patientId, testId, waypoints, time, distance){
     error: function(){
         console.log("Error");
     }
-  })
-}
-
-function notifyHtmlInjection(num){
-  badgeS.innerHTML = num;
-}
-
-function updateNotify(testState){
-  $.ajax({
-      url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
-      method:"get",
-      success: function(result, status){
-          var teste = result.tests;
-          notifyHtmlInjection(teste.length)
-      },
-      error: function(){
-          console.log("Error");
-      }
   })
 }
 

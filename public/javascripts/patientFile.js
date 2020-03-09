@@ -5,13 +5,11 @@ const testsT = document.getElementById("testsT");
 const patientInfoS = document.getElementById("patientInfoS");
 const testBtn = document.getElementById("testBtn");
 testBtn.onclick = scheduleTest;
-const badgeS = document.getElementById("badge");
 
 var patient;
 var tests;
 
 window.onload = function(){
-    updateNotify("Completed")
     $.ajax({
         url: '/api/patients/'+patientId,
         method: 'get',
@@ -133,6 +131,7 @@ function rescheduleTest(testId){
     }
 }
 
+
 function getNeuroPatientTests(attribId){
     $.ajax({
         url: '/api/neuros/'+neuroId+'/attributions/'+attribId+'/tests',
@@ -140,24 +139,6 @@ function getNeuroPatientTests(attribId){
         success: function(result, status){
             tests = result.tests;
             testsHtmlInjection(tests);
-        }
-    })
-}
-
-function notifyHtmlInjection(num){
-    badgeS.innerHTML = num;
-}
-
-function updateNotify(testState){
-    $.ajax({
-        url:"/api/neuros/"+neuroId+"/patients/tests/state/"+testState,
-        method:"get",
-        success: function(result, status){
-            var teste = result.tests;
-            notifyHtmlInjection(teste.length)
-        },
-        error: function(){
-            console.log("Error");
         }
     })
 }

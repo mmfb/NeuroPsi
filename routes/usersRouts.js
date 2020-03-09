@@ -13,4 +13,15 @@ router.get('/:name', function(req, res, next){
     }, next);
 });
 
+router.get('/:userId/tests/:testState', function(req, res, next){
+    usersDAO.getUserTests(req.params.userId, req.params.testState, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.status(200).send(result);
+    }, next);
+});
+
 module.exports = router;

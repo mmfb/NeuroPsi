@@ -2,9 +2,6 @@ const canvas = document.getElementById("canvas");
 const context = canvas.getContext("2d");
 const testId = parseInt(sessionStorage.getItem("testId"));
 const patientId = parseInt(sessionStorage.getItem("patientId"));
-const numPendingTest = parseInt(sessionStorage.getItem("numPendingTests"))
-const badgeS = document.getElementById("badge");
-badgeS.innerHTML = numPendingTest;
 var coords;
 
 window.onload = function(){
