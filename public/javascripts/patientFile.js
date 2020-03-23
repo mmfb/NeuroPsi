@@ -18,7 +18,14 @@ window.onload = function(){
             patientInfoHtmlInjection(patient);
         }
     })
-    getNeuroPatientTests(attribId) 
+    $.ajax({
+        url: '/api/users/'+neuroId+'/tests/?patientId='+patientId,
+        mathod: 'get',
+        success: function(result, status){
+            tests = result.tests;
+            testsHtmlInjection(tests);
+        }
+    }) 
 }
 
 function patientInfoHtmlInjection(patient){

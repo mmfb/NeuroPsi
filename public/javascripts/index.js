@@ -2,7 +2,7 @@
 $("#loginBtn").click(function(){
     var name = $("#name").val();
     $.ajax({
-        url: "/api/users/" + name,
+        url: "/api/users/?name="+name,
         method: "get",
         contentType: "application/json",
         dataType: "json",

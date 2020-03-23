@@ -19,47 +19,48 @@ module.exports.getUserIds = function(name, callback){
     })  
 }
 
-module.exports.getUser = function(userId, callback){
+module.exports.getUser = function(params, callback){
+    var queryParams = []
+    var index = 0
+    var query = "select userId, patientId, neuroId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, coords from Location inner join User on user_locId = locId left join Patient on userId = patient_userId left join Neuropsi on userId = neuro_userId where";
+    for(p in params){
+        query += " "+p+"=?"
+        queryParams.push(params[p])
+        if(index>0){
+            query += " and"
+        }
+        index++
+    }
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"});
             return
         }
-        conn.query("select userId, patientId, neuroId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, coords from Location inner join User on user_locId = locId left join Patient on userId = patient_userId left join Neuropsi on userId = neuro_userId where userId = ?", [userId], function(err, user){
+        conn.query(query, queryParams, function(err, result){
             conn.release();
             if (err){
                 callback(err, {code:500, status: "Error in a database query"});
                 return;
             }
-            var user = user[0];
+            var user = result[0];
             callback(false, {code: 200, status:"Ok", user: user});
         })
     })  
 }
 
-module.exports.getUserTests = function(userId, testState, callback){
+module.exports.getUserTests = function(userId, params, callback){
+    var queryParams = [userId]
+    var query = "select testId, testState, assignedDate, completedDate, comment from User left join Patient on patient_userId = userId left join Neuropsi on neuro_userId = userId inner join Attribution on attrib_fileId = patientId or attrib_neuroId = neuroId inner join Test on test_attribId = attribId left join Result on result_testId = testId where userId = ?";
+    for(p in params){
+        query += " and "+p+"=?"
+        queryParams.push(params[p])
+    }
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"});
             return
         }
-        var query = "select testId, testState, assignedDate, completedDate, comment from User left join Patient on patient_userId = userId left join Neuropsi on neuro_userId = userId inner join Attribution on attrib_fileId = patientId or attrib_neuroId = neuroId inner join Test on test_attribId = attribId left join Result on result_testId = testId where userId = ?";
-        var values = [userId];
-        if(testState !== 'undefined'){
-            testState = JSON.parse(testState)
-            query += " and testState in (?";
-            if(Array.isArray(testState)){
-                values.push(testState[0])
-                for(i=1; i<testState.length; i++){
-                    query += ",?"
-                    values.push(testState[i])
-                }
-            }else{
-                values.push(testState)
-            }
-            query += ");"
-        }
-        conn.query(query, values, function(err, result){
+        conn.query(query, queryParams, function(err, result){
             conn.release();
             if (err){
                 callback(err, {code:500, status: "Error in a database query"});

@@ -2,8 +2,9 @@ var express = require('express');
 var router = express.Router();
 var usersDAO = require('../models/usersDAO');
 
-router.get('/:name', function(req, res, next){
-    usersDAO.getUser(req.params.name, function(err, result){
+router.get('/', function(req, res, next){
+    console.log(req.query)
+    usersDAO.getUser(req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -13,8 +14,8 @@ router.get('/:name', function(req, res, next){
     }, next);
 });
 
-router.get('/:userId/tests/:testState', function(req, res, next){
-    usersDAO.getUserTests(req.params.userId, req.params.testState, function(err, result){
+router.get('/:userId/tests', function(req, res, next){
+    usersDAO.getUserTests(req.params.userId, req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
