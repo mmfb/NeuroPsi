@@ -1,13 +1,31 @@
+
 main{
-    width: 100%;
-    height: 100%;   
+    height: 86.5vh;
+    display: grid;
+    margin:10px;
+    grid-template-areas: 
+        'comp'
+        'test'
+        'control';
+    grid-gap: 10px;
+    grid-template-rows: 70px auto 50px;
 }
 
-#canvas{
-    position: relative;
-    display: block;
-    margin: auto;
-    margin-top: 4%;;
+#comp{
+    grid-area: comp;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+}
+#test{
+    grid-area: test;
+    height: 100%;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+}
+#control{
+    grid-area: control;
 }
 
 form{
@@ -21,68 +39,31 @@ form input{
     height:30px;
 }
 
-.btn:link,
-.btn:visited {
-    text-transform: uppercase;
+.center {
+    text-align: center;
+}
+
+#pagination {
+    display: inline-block;
+}
+
+#pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
     text-decoration: none;
-    padding: 15px 40px;
-    display: inline-block;
-    border-radius: 100px;
-    transition: all .2s;
-    position: absolute;
-    bottom: 5%;
-    left: 45%;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+    margin: 0 4px;
 }
 
-.btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+#pagination a.active {
+    background-color: #59BCBC;
+    color: white;
+    border: 1px solid #59BCBC;
+}
+#pagination a:hover:not(.active){
+    background-color: #ddd;
 }
 
-.btn:active {
-    transform: translateY(-1px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
 
-.btn-white {
-    background-color: rgb(58, 155, 184);;
-    color: rgb(0, 0, 0);
-}
-
-.btn::after {
-    content: "";
-    display: inline-block;
-    height: 100%;
-    width: 100%;
-    border-radius: 100px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    transition: all .4s;
-}
-
-.btn-white::after {
-    background-color: rgb(83, 235, 37);
-}
-
-.btn:hover::after {
-    transform: scaleX(1.4) scaleY(1.6);
-    opacity: 0;
-}
-
-.btn-animated {
-    animation: moveInBottom 5s ease-out;
-    animation-fill-mode: backwards;
-}
-
-@keyframes moveInBottom {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0px);
-    }
-}

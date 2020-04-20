@@ -3,7 +3,6 @@ var router = express.Router();
 var usersDAO = require('../models/usersDAO');
 
 router.get('/', function(req, res, next){
-    console.log(req.query)
     usersDAO.getUser(req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;

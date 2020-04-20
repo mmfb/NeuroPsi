@@ -3,13 +3,22 @@ const context = canvas.getContext("2d");
 const testId = parseInt(sessionStorage.getItem("testId"));
 const patientId = parseInt(sessionStorage.getItem("patientId"));
 var coords;
+var test
+
+window.onresize = function(){
+    context.canvas.width = document.getElementById("test").clientWidth
+    context.canvas.height = document.getElementById("test").clientHeight
+}
 
 window.onload = function(){
-   navigator.geolocation.getCurrentPosition(success, error);
-   context.canvas.width  = window.innerWidth*0.99;
-   context.canvas.height = window.innerHeight*0.90;
+    context.canvas.width = document.getElementById("test").clientWidth
+    context.canvas.height = document.getElementById("test").clientHeight
+    navigator.geolocation.getCurrentPosition(success, error);
+    getUserTests(1,{evalId:5}, loadPagination)
 
-   $("#startBtn").click(function(){
+
+
+   /*$("#startBtn").click(function(){
         btnTxt = $(this).html();
         if(btnTxt == "Começar"){
             startRey();
@@ -30,7 +39,7 @@ window.onload = function(){
             });
         }
         $("#startBtn").prop("value","Proximo");
-    });
+    });*/
 }
 
 function success(position){
@@ -43,7 +52,7 @@ function error(err) {
     coords = {lat: patientLocation.y, lng: patientLocation.x}
 };
 
-function imgAnimation(img){
+/*function imgAnimation(img){
     var imgWidth = img.width;
     var imgHeight = img.height;
     var x = canvas.width/2 - imgWidth/2;
@@ -85,4 +94,74 @@ function startRey(){
         startDraw("canvas");
         startRecording();
     }, 1000);
+}*/
+
+function getUserTests(userId, params, callback){
+    var url = '/api/users/'+userId+'/tests/'
+    if(params){
+        url+='?'
+        for(p in params){
+            url+=p+'='+params[p]+'&'
+        }
+        url = url.slice(0,-1)
+    }
+    $.ajax({
+        url:url,
+        method:'get',
+        success:function(result){
+            test = result.tests[0]
+            callback(test)
+        }
+    })
 }
+
+function loadPagination(test){
+    var str = "<a>&laquo;</a>"
+    var i = 1
+    for(t of test.test){
+        str+="<a"
+        if(i == 1){
+            str+=" class='active'"
+        }
+        str+=">"+i+"</a>"
+        i++
+    }
+    str+="<a onclick = 'loadNextTest()'>&raquo;</a>"
+    document.getElementById("pagination").innerHTML = str
+    loadTest(test.test[0])
+}
+
+function loadNextTest(){
+    var pag = document.getElementsByClassName("active")[0]
+    pag.classList.remove("active")
+    var index = JSON.parse(pag.textContent)
+    console.log(index)
+    pag = document.getElementById("pagination").children
+    console.log(pag)
+
+    pag[index+1].classList.add("active")
+
+    if(index == test.test.length){
+        alert("Teste terminado")
+    }
+    if(index > 1){
+        endTest(test.test[index-1])
+    }
+    loadTest(test.test[index])
+}
+
+function endTest(test){
+    console.log(test)
+    var str = "end"+test.type+"Test"
+    window[str](test)
+}
+
+function loadTest(test){
+    var str = "load"+test.type+"Test"
+    window[str](test) 
+
+}
+
+
+
+

@@ -1,28 +1,32 @@
 body{
     font-family: "Arial", serif;
+    font-size: 18px;
+    color: #f2f2f2;
     overflow-x: hidden;
     margin:0;
     padding:0;
 }
+h1{
+    float:left;
+    vertical-align: middle;
+    margin-left: 28px;
+}
 .navBar{
     top: 0;
-    background-color: #3b5998;
+    background-color: #59BCBC;
     overflow: hidden;
     width: 100%;
-    position: fixed;
+    position: static;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     z-index: 4;
-    
 }
 .navBar a{
-    float:left;
-    display:block;
-    color: #f2f2f2;
+    float:right;
     text-align: center;
-    padding: 1.25%;
+    padding: 28px;
     text-decoration: none;
-    font-size: 18px;
 }
+
 .navBar ul{
     margin: auto;
     list-style: none;
@@ -31,12 +35,3 @@ body{
     background-color: #ddd;
     color:#000;
 }
-
-.badge {
-    position: relative;
-    top: -10px;
-    padding: 5px 10px;
-    border-radius: 50%;
-    background: red;
-    color: white;
-  }

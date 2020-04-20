@@ -50,7 +50,13 @@ module.exports.getUser = function(params, callback){
 
 module.exports.getUserTests = function(userId, params, callback){
     var queryParams = [userId]
-    var query = "select testId, testState, assignedDate, completedDate, comment from User left join Patient on patient_userId = userId left join Neuropsi on neuro_userId = userId inner join Attribution on attrib_fileId = patientId or attrib_neuroId = neuroId inner join Test on test_attribId = attribId left join Result on result_testId = testId where userId = ?";
+    var query = "select evalId, assignedDate, evalState, testId, creationDate, testTime, test_routeId, testType"+
+                " from User left join Patient on patient_userId = userId left join Neuropsi on neuro_userId = userId"+
+                " inner join Attribution on attrib_fileId = patientId or attrib_neuroId = neuroId"+
+                " inner join Evaluation on eval_attribId = attribId inner join Test on eval_testId = testId"+
+                " inner join (select attrib_testId, GROUP_CONCAT(typeName SEPARATOR ',') as testType"+
+                " from Test inner join TestType_Attribution on attrib_testId = testId inner join TestType on attrib_typeId = testTypeId"+
+                " group by testId) as type on testId = attrib_testId where userId = ?"
     for(p in params){
         query += " and "+p+"=?"
         queryParams.push(params[p])
@@ -72,8 +78,10 @@ module.exports.getUserTests = function(userId, params, callback){
                 if(!t.comment){
                     t.comment = "-";
                 }
+                t.testType = t.testType.split(',')
             }
-            callback(false, {code: 200, status:"Ok", tests: result});
+            var tests = result
+            getTestsParams(conn, tests, callback)
         })
     })  
 }
@@ -86,3 +94,62 @@ function convertDate(date){
         return "-";
     } 
 }
+
+function getTestsParams(conn, tests, callback){
+    for(test of tests){
+        var types = test.testType
+        for(t of types){
+            var testId = test.testId
+            var query = "select * from "+t+" where "+t+"_testId = ?"
+            conn.query(query, [testId], function(err, result){
+                if(err){
+                    callback(err, {code:500, status:"Error in a database query"})
+                    return
+                }
+                test.test = []
+                for(r of result){
+                    test.test.push({type:t, params:[r]})
+                    var id = r[t.toLowerCase()+"Id"]
+                    var query = "select * from "+t+" where "+t+"_"+t+"Id = ?"
+                    conn.query(query, [id], function(err, result){
+                        if(err){
+                            callback(err, {code:500, status:"Error in a database query"})
+                            return
+                        }
+                        if(result.length > 0){
+                            test.test[test.test.length-1].params.push(result[0])
+                            id = result[0][t.toLowerCase()+"Id"]
+                            getSameTestParams(conn, id, t, test, tests, callback)
+                        }else{
+                            if(tests.indexOf(test) == tests.length-1){
+                                callback(false, {code:200, status:"Ok", tests:tests})
+                            }
+                        }
+                    })   
+                }
+            })
+        }
+    }
+}
+
+function getSameTestParams(conn, id, type, test, tests, callback){
+    var query = "select * from "+type+" where "+type+"_"+type+"Id = ?"
+    conn.query(query, [id], function(err, result){
+        if(err){
+            callback(err, {code:500, status:"Error in a database query"})
+            return
+        }
+        if(result.length > 0){
+            test.test[test.test.length-1].params.push(result[0])
+            id = result[0][t.toLowerCase()+"Id"]
+            getSameTestParams(conn, id, t, test, tests, callback)
+        }else{
+            if(tests.indexOf(test) == tests.length-1){
+                callback(false, {code:200, status:"Ok", tests:tests})
+            }
+        }
+    })   
+}
+
+
+

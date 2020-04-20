@@ -1,5 +1,106 @@
 var mysql = require('./mysqlConn').pool;
 
+module.exports.saveTests = function(neuroId, tests, callback){
+    var testId
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status:"Error in the connection to the database"})
+            return;
+        }
+        var query = "insert into Test (creationDate, testTime) values (?,?)"
+        conn.query(query, [new Date(), tests.time], function(err, result){
+            if(err){
+                callback(err, {code:500, status:"Error in a database query 1"})
+                return
+            }
+            var testId = result.insertId
+            var key = tests[0].type.toLowerCase()+"_testId"
+            var types = []
+            insertTestInTable(conn, types, tests, testId, false, key, callback)
+            query = "select testTypeId from TestType where typeName in ("
+            for(type of types){
+                query+="?,"
+            }
+            query = query.slice(0,-1)
+            query+=");"
+            conn.query(query, types, function(err, result){
+                if(err){
+                    callback(err, {code:500, status:"Error in a database query 2"})
+                    return
+                }
+                query = "insert into TestType_Attribution (attrib_testId, attrib_typeId) values "
+                var values = []
+                for(type of result){
+                    query+="(?,?),"
+                    values.push(testId)
+                    values.push(type.testTypeId)
+                }
+                query = query.slice(0,-1)
+                conn.query(query, values, function(err, result){
+                    if(err){
+                        callback(err, {code:500, status:"Error in a database query 3"})
+                        return
+                    }
+                    query = "insert into SavedTest (savedTest_testId, savedTest_neuroId) values (?,?)"
+                    conn.query(query, [testId, neuroId], function(err, result){
+                        if(err){
+                            callback(err, {code:500, status:"Error in a database query 4"})
+                            return
+                        }
+                        callback(false, {code:200, status:"Ok", testId: testId});
+                    })
+                })
+            })
+        })
+    })
+}
+
+function insertTestInTable(conn, types, tests, testId, refId, key, callback){
+    if(tests.length>0){
+        var test = tests[0]
+        if(test.params == 0){
+            tests.shift()
+            if(tests[0]){
+                var key = tests[0].type.toLowerCase()+"_testId"
+                insertTestInTable(conn, types, tests, testId, false, key, callback)
+            }
+        }else{
+            if(!types.includes(test.type)){
+                types.push(test.type)
+            }
+            params = test.params.shift()
+            if(refId){
+                params[key] = refId
+            }else{
+                params[key] = testId
+            }
+            var values = []
+            var str = "("
+            var query = "insert into "+test.type+" ("
+            for(param in params){
+                values.push(params[param])
+                str+="?,"
+                query += param+","
+            }
+            var str = str.slice(0,-1)
+            str+=");"
+            var query = query.slice(0,-1)
+            query += ") values "+str
+            console.log(query)
+            console.log(values)
+            conn.query(query, values, function(err, result){
+                if(err){
+                    callback(err, {code:500, status:"Error in a database query"})
+                    return
+                }
+                refId = result.insertId
+                var key = test.type.toLowerCase()+"_"+test.type.toLowerCase()+"Id"
+                insertTestInTable(conn, types, tests, testId, refId, key, callback)
+            })
+        } 
+    } 
+}
+
 module.exports.getNeuroPatients = function(neuroId, callback, next){
     mysql.getConnection(function(err, conn){
         if(err){
@@ -36,13 +137,13 @@ module.exports.getPatient = function(patientId, callback, next){
     })
 }
 
-module.exports.scheduleTest = function(attribId, callback){
+module.exports.scheduleTest = function(testId, attribId, callback){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status:"Error in the connection to the database"})
             return;
         }
-        conn.query("insert into Test (assignedDate, test_attribId) values (?, ?);", [new Date(), attribId], function(err, result){
+        conn.query("insert into Evaluation (assignedDate, eval_attribId, eval_testId) values (?,?,?);", [new Date(), attribId, testId], function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status: "Error in a database query"});

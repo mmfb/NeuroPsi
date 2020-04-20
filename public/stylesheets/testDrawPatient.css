@@ -1,0 +1,20 @@
+#dropdownImg {
+    grid-area: test;
+    justify-self: end;
+    align-self: start;
+    margin: 6px 3px;
+    position: relative;
+    display: inline-block;
+}
+#dropdownImg-content {
+    display: none;
+    position: absolute;
+    right: 0px;
+    background-color: #727272;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+#dropdownImg:hover #dropdownImg-content {
+    display: block;
+}

@@ -1,7 +1,7 @@
 function startDraw(canvasId, rangeId) {
 	var playbackInterruptCommand = "";
 	$("#pauseBtn").hide();
-	drawing = new RecordableDrawing(canvasId, rangeId);
+	var drawing = new RecordableDrawing(canvasId, rangeId);
 	
 
 	$("#recordBtn").click(function(){
@@ -379,24 +379,17 @@ RecordableDrawing = function (canvasId, rangeId)
 		}
 		if (addToArray)
 			self.actions.push(actionArg);
-	}
-	
-	this.drawCursor = function(actionArg){
-
-		var x = actionArg.x;
-		var y = actionArg.y;
-
-		self.ctx.beginPath();
-		self.ctx.arc(x, y, 10, 0, 2 * Math.PI);
-		self.ctx.stroke();
+			self.ctx.beginPath();
+			self.ctx.arc(x, y, 10, 0, 2 * Math.PI);
+			self.ctx.stroke();
 	}
 		
 	__init = function()
 	{
 		self.canvas = $("#" + canvasId);
-		if(rangeId){
+		/*if(rangeId){
 			self.range = $("#" + rangeId)
-		}
+		}*/
 		if (self.canvas.length == 0)
 		{
 			return;
@@ -456,7 +449,6 @@ Recording = function (drawingArg)
 			self.intervalId = null;
 		}
 		self.started = false;
-		self.drawing.range.value = 0;
 	}
 	
 	this.onInterval = function()
@@ -480,7 +472,6 @@ Recording = function (drawingArg)
 			self.buffer = new Array();
 		}
 		self.currTime += self.timeInterval;
-		self.drawing.range.max = 100;
 	}
 	
 	this.addAction = function(actionArg)
@@ -551,7 +542,6 @@ Recording = function (drawingArg)
 			if (intervalDiff >= 0)
 				self.scheduleDraw(actionSetArg.next, intervalDiff, callbackFunctionArg, onPlayEnd, onPause, false,interruptActionStatus);
 
-			self.drawing.range.value += 1;
 			self.drawActions(actionSetArg.actions, onPlayEnd, isFirst, isLast);
 		},interval);
 	}
