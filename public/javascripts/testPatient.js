@@ -4,6 +4,7 @@ const testId = parseInt(sessionStorage.getItem("testId"));
 const patientId = parseInt(sessionStorage.getItem("patientId"));
 var coords;
 var test
+var params = []
 
 window.onresize = function(){
     context.canvas.width = document.getElementById("test").clientWidth
@@ -14,7 +15,7 @@ window.onload = function(){
     context.canvas.width = document.getElementById("test").clientWidth
     context.canvas.height = document.getElementById("test").clientHeight
     navigator.geolocation.getCurrentPosition(success, error);
-    getUserTests(1,{evalId:5}, loadPagination)
+    getPatientTests(1,{testId:2}, loadPagination)
 
 
 
@@ -96,12 +97,12 @@ function startRey(){
     }, 1000);
 }*/
 
-function getUserTests(userId, params, callback){
-    var url = '/api/users/'+userId+'/tests/'
-    if(params){
+function getPatientTests(patientId, conditions, callback){
+    var url = '/api/patients/'+patientId+'/tests'
+    if(conditions){
         url+='?'
-        for(p in params){
-            url+=p+'='+params[p]+'&'
+        for(c in conditions){
+            url+=c+'='+conditions[c]+'&'
         }
         url = url.slice(0,-1)
     }
@@ -110,6 +111,7 @@ function getUserTests(userId, params, callback){
         method:'get',
         success:function(result){
             test = result.tests[0]
+            console.log(result)
             callback(test)
         }
     })
@@ -118,20 +120,23 @@ function getUserTests(userId, params, callback){
 function loadPagination(test){
     var str = "<a>&laquo;</a>"
     var i = 1
-    for(t of test.test){
-        str+="<a"
-        if(i == 1){
-            str+=" class='active'"
+    for(exer of test.exer){
+        for(param of exer.params){
+            params.push(param)
+            str+="<a"
+            if(i == 1){
+                str+=" class='active'"
+            }
+            str+=">"+i+"</a>"
+            i++
         }
-        str+=">"+i+"</a>"
-        i++
     }
-    str+="<a onclick = 'loadNextTest()'>&raquo;</a>"
+    str+="<a onclick = 'loadNextParam()'>&raquo;</a>"
     document.getElementById("pagination").innerHTML = str
-    loadTest(test.test[0])
+    loadParam(params[0])
 }
 
-function loadNextTest(){
+function loadNextParam(){
     var pag = document.getElementsByClassName("active")[0]
     pag.classList.remove("active")
     var index = JSON.parse(pag.textContent)
@@ -141,24 +146,25 @@ function loadNextTest(){
 
     pag[index+1].classList.add("active")
 
-    if(index == test.test.length){
+    if(index == params.length){
         alert("Teste terminado")
     }
     if(index > 1){
-        endTest(test.test[index-1])
+        endTest(params[index-1])
     }
-    loadTest(test.test[index])
+    loadParam(params[index])
 }
 
-function endTest(test){
-    console.log(test)
-    var str = "end"+test.type+"Test"
-    window[str](test)
+function endTest(param){
+    console.log(param)
+    var str = "end"+param.type+"Test"
+    window[str](param)
 }
 
-function loadTest(test){
-    var str = "load"+test.type+"Test"
-    window[str](test) 
+function loadParam(param){
+    console.log(param.type)
+    var str = "load"+param.type+"Param"
+    window[str](param) 
 
 }
 

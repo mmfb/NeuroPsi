@@ -26,7 +26,7 @@ router.get('/:patientId/tests/pending', function(req, res, next){
 });
 
 router.get('/:patientId/tests', function(req, res, next){
-    patientsDAO.getPatientTests(req.params.patientId, function(err, result){
+    patientsDAO.getPatientTests(req.params.patientId, req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

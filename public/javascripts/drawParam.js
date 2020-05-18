@@ -8,16 +8,12 @@ $("#dropdownCheck").change(function(){
     }
 })
 
-$(document).on("keypress", "input", function(e){
-    if(e.which == 13){
-        if(document.getElementById("dropdownCheck").checked){
-            dropdownImgInjection("Desenhar esta figura")
-        }
-        else{
-            drawImageOnCanvas()
-        }
-    }
-});
+/*if(document.getElementById("dropdownCheck").checked){
+    dropdownImgInjection("Desenhar esta figura")
+}
+else{
+    drawImageOnCanvas()
+}*/
 
 function dropdownImgInjection(text){
     var src = document.getElementById("imgPath").value;
@@ -55,10 +51,10 @@ function loadImage(src) {
     img.src = src;
 }
 
-function loadDrawParams(elemId, test){
+function loadDrawParams(elemId, param){
     var elem = document.getElementById(elemId).children[0]
     //elem.setAttribute('data-function', 'saveParamsInTest')
-    str="<form onSubmit='return false;'>"
+    str="<form id='paramForum' onSubmit='return false;'>"
             +"<p>Imagem</p>"
             +"<label>url: </label>"
             +"<input type='text' id='imgPath'><br>"
@@ -79,21 +75,17 @@ function loadDrawParams(elemId, test){
             +"<label>min</label>"
         +"</form>"
     elem.innerHTML=str;
-    if(test){
-        insertParamsFromTest(test)
+    if(param){
+        insertParamsFromTest(param)
     }else{
-        tests[testIndex].type = "Draw"
-        elem = getTestImgElem(testIndex)
-        //elem.setAttribute('data-function', 'loadDrawParams')
-        saveParamsInTest("testParam", testIndex)
+        test.exer[exerIndex].type = "Draw"
+        passParamsToExer("paramForum", exerIndex, paramIndex)
     }
 }
 
-function insertParamsFromTest(tests){
-    for(test of tests){
-        for(param of test.params){
-            document.getElementById(param).value = test.params[param]
-        }
-    }
+function loadDrawInPreview(param){
+    passParamsToExer("paramForum", exerIndex, paramIndex)
+    console.log(param)
 }
+
 

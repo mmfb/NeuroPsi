@@ -1,70 +1,130 @@
 
-const preview = document.getElementById("preview");
-const previewCtx = preview.getContext('2d');
-const testsD = document.getElementById("tests")
-var tests = []
-var testIndex
+const canvas = document.getElementById("canvas");
+const canvasCtx = canvas.getContext('2d');
+const exersD = document.getElementById("exers")
+var test = {testTime:0, exer:[]}
+var exerIndex
+var paramIndex
 var neuroId = 1
-var testId
 
-/*window.onload = function(){
-    tests = [{time:20, type:"Draw", params:[{imgPosX:200},{imgPosX:200}]}, {time:30, type:"Draw", params:[{imgPosY:400}]}]
-    saveTests()
+/*test = 
+{testTime: 80, exer:[
+    {type:"Draw", exerTime: 10, params:[
+        {imgPosX:800}, 
+        {imgPosY:800}]
+    }, 
+    {type:"Draw", exerTime: 5, params:[
+        {imgPosX:100}]
+    },
+    {type:"Digits", exerTime:50, params:[
+        {numCards:80},
+        {numCards:80}]
+    }]
 }*/
+//saveNewTestInDB(neuroId, test)
+//getNeuroSavedTests(neuroId)
 
-function addTest(){
-    var imgPreview = preview.toDataURL("image/png");
-    tests.push({time:0, type:"Draw", params:[{}], imgPreview:imgPreview})
-    testIndex = tests.length-1
-    loadTestsImgsOnElem(tests, testsD)
+/*$(document).on("keypress", function(e){
+    if(e.which == 13){
+        var exer = test.exer[exerIndex]
+        var param = exer.params[paramIndex]
+        window["load"+exer.type+"InPreview"](param)
+    }
+});*/
+
+document.getElementById("exerParam").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      var exer = test.exer[exerIndex]
+      var param = exer.params[paramIndex]
+      window["load"+exer.type+"InPreview"](param)
+    }
+});
+
+function addExer(){
+    //var imgPreview = preview.toDataURL("image/png");
+    test.exer.push({exerTime:0, params:[{}]})
+    exerIndex = test.exer.length-1
+    paramIndex = test.exer[exerIndex].params.length-1
+    loadParamsImgsOnElem(test, exersD)
 }
 
-function loadTestsImgsOnElem(tests, elem){
+function convertExerInParam(){
+    var exer = test.exer.splice(exerIndex, 1)
+    var params = exer[0].params
+    for(param of params){
+        test.exer[exerIndex-1].params.push(param)
+    }
+    loadParamsImgsOnElem(test, exersD)
+}
+
+function loadParams(exer){
+    if("type" in exer){
+        window["load"+exer.type+"Params"]("exerParam", exer)
+        return
+    }
+    document.getElementById("exerParam").children[0].innerHTML = "";
+    document.getElementById("preview").innerHTML = "";
+}
+
+function loadParamsImgsOnElem(test, elem){
     str=""
-    for(i=0; i<tests.length; i++){
-        str+="<div data-value='"+i+"'"
-        if(i==testIndex){
-            str+="class='highlight' "
+    for(i=0; i<test.exer.length; i++){
+        str+="<div class='exer' data-value='"+i+"'>"
+        for(j=0; j<test.exer[i].params.length; j++){
+            str+="<div class='param' data-value='"+j+"'"
+            str+="onclick='selectParam(this,"+i+","+j+")'></div>"/*<img src='"+test.exer[i].params[j].imgPreview+"'>*/
         }
-        str+="onclick='selectTest(this)'><img src='"+tests[i].imgPreview+"'></div>"
+        str+="</div>"
     }
     elem.innerHTML = str;
+    var exersElem = elem.children
+    var exerElem = exersElem[exersElem.length-1]
+    var exerIndex = parseInt(exerElem.getAttribute("data-value"))
+    var paramsElem = exerElem.getElementsByClassName("param")
+    var paramElem = paramsElem[paramsElem.length-1]
+    var paramIndex = parseInt(paramElem.getAttribute("data-value"))
+    selectParam(paramElem, exerIndex, paramIndex)
 }
 
-function selectTest(elem){
-    removeAllTestsHighlights()
+function selectParam(elem, eIndex, pIndex){
+    exerIndex = eIndex
+    paramIndex = pIndex
+    removeAllParamsHighlights()
     elem.classList.add("highlight")
-    testIndex = parseInt(elem.getAttribute("data-value"))
-    var test = tests[testIndex]
-    if(elem.hasAttribute('data-function')){
-        window[elem.getAttribute('data-function')]("testParam", test)
-    }else{
-        document.getElementById("testParam").children[0].innerHTML = "";
+    var exer = test.exer[exerIndex]
+    loadParams(exer)
+}
+
+function insertParamsFromTest(param){
+    console.log(param)
+    for(key in param){
+        document.getElementById(key).value = param[key]
     }
 }
 
-function removeAllTestsHighlights(){
-    var tests = testsD.children
-    for(t of tests){
-        t.classList.remove("highlight")
-    }
-}
-
-function saveTestParams(){
-    saveParamsInTest("testParam", testIndex)
-}
-
-function saveParamsInTest(elemId, testIndex){
-    var elements = document.getElementById(elemId).getElementsByTagName("input")
-    var test = tests[testIndex]
-    for(elem of elements){
-        if (elem.type && elem.type === 'checkbox'){
-            test.params[0][elem.id] = elem.checked
-        }else{
-            test.params[0][elem.id] = elem.value
+function removeAllParamsHighlights(){
+    var exers = exersD.children
+    for(exer of exers){
+        var params = exer.children
+        for(param of params){
+            param.classList.remove("highlight")    
         }
     }
-    console.log(tests)
+}
+
+function saveExerParam(){
+    passParamsToExer("paramForum", exerIndex, paramIndex)
+}
+
+function passParamsToExer(elemId, exerIndex, paramIndex){
+    var elements = document.getElementById(elemId).children
+    elements = Array.from(elements).filter(e => e.id);
+    var exer = test.exer[exerIndex]
+    var param = exer.params[paramIndex]
+    for(elem of elements){
+        param[elem.id] = elem.value
+    }
 }
 
 function getTestImgElem(testIndex){
@@ -76,20 +136,30 @@ function getTestImgElem(testIndex){
     }
 }
 
-function clearElem(elemId){
-    document.getElementById(elemId).innerHTML = "";
+function saveTest(){
+    //saveParamsInTest("testParam", testIndex)
+    saveTestInDB(neuroId, test)
 }
 
-function saveTests(){
-    saveParamsInTest("testParam", testIndex)
+function saveTestInDB(neuroId, test){
     $.ajax({
-        url:"/api/neuros/"+neuroId+"/testsSaved",
+        url:"/api/neuros/"+neuroId+"/savedTests",
         method:"post",
-        data: {tests:JSON.stringify(tests)},
+        data: {test:JSON.stringify(test)},
         success: function(result, status){
             console.log(result)
-            testId = result.testId
+            test.testId = result.testId
             alert("Teste guardado com sucesso");
+        }
+    })
+}
+
+function getNeuroSavedTests(neuroId){
+    $.ajax({
+        url:"/api/neuros/"+neuroId+"/savedTests",
+        method:"get",
+        success: function(result, status){
+            console.log(result.tests)
         }
     })
 }
@@ -128,7 +198,7 @@ function openPatientsList(){
 
 function scheduleTest(patientId, attribId){
     $.ajax({
-        url:"/api/neuros/"+neuroId+"/tests/"+testId+"/patients/"+patientId,
+        url:"/api/neuros/"+neuroId+"/tests/"+test.testId+"/patients/"+patientId,
         method:"post",
         data: {attribId: attribId},
         success: function(data, status){
@@ -138,7 +208,6 @@ function scheduleTest(patientId, attribId){
             console.log("Error");
         }
     })
-
 }
 
 function patientsHtmlInjection(patients){

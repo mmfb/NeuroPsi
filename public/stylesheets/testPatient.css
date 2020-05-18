@@ -24,6 +24,18 @@ main{
     border-color:#707070;
     border-width:1px;
 }
+#test p{
+    position: relative;
+    color:black;
+    text-align: center;
+}
+#answerField{
+    color:black;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+}
 #control{
     grid-area: control;
 }

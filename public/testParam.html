@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <link rel="stylesheet" href="stylesheets/navBars.css">
         <link rel="stylesheet" href="stylesheets/testParam.css">
+        <link rel="stylesheet" href="stylesheets/digits.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     </head>
     <body>
@@ -27,35 +28,37 @@
                         <div class="dropdown">
                             <button class="dropbtn" style = "background-image: url('./images/brain.png');">Memória</button>
                             <div class="dropdown-content">
-                            <a onclick="loadDrawParams('testParam')">Desenhar figura</a>
+                            <a onclick="loadDrawParams('exerParam')">Desenhar figura</a>
                             </div>
                         </div>
                     </li>
                     <li>
                         <div class="dropdown">
-                            <button class="dropbtn" style = "background-image: url('./images/brain.png');">Dropdown</button>
+                            <button class="dropbtn" style = "background-image: url('./images/brain.png');">Atenção</button>
                             <div class="dropdown-content">
-                            <a href="#">Link 1</a>
-                            <a href="#">Link 2</a>
-                            <a href="#">Link 3</a>
+                            <a onclick="loadDigitsParams('exerParam')">5 digits</a>
                             </div>
                         </div>
                     </li>
                 </ul>
             </section>
             <section id="testComp">
-                <div id="tests"></div>
-                <img src="images/plus-icon.jpg" onclick="addTest()" height="30px" width="30px">
+                <div id="exers"></div>
+                <img id="addBtn" src="images/plus-icon.jpg" onclick="addExer()" height="30px" width="30px">
             </section>
-            <section id="testParam">
+            <section id="exerParam">
                 <div></div>
-                <button onclick="saveTests()">Guardar</button>
+                <button onclick="convertExerInParam()">Mesmo exercicio</button>
+                <button onclick="saveTest()">Guardar</button>
                 <button onclick="openPatientsList()">Marcar test</button>
             </section>
-            <canvas id="preview"></canvas>
+            <section id="preview">
+                <canvas id="canvas"></canvas>
+            </section>
             <div id="dropdownImg"></div>
         </main>
     </body>
     <script src="javascripts/testParam.js"></script>
     <script src="javascripts/drawParam.js"></script>
+    <script src="javascripts/digitsParam.js"></script>
 </html>

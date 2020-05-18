@@ -1,7 +1,6 @@
 const dropdownImg = document.getElementById("dropdownImg")
 
-function loadDrawTest(test){
-    console.log(test)
+function loadDrawParam(test){
     var params = test.params[0]
     if(params.dropdownCheck){
         loadDropdownImg(dropdownImg, params, "Desenhar figura")

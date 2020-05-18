@@ -89,29 +89,64 @@ module.exports.cancelTest = function(testId, comment, callback, next){
     })
 }
 
-module.exports.getPatientTests = function(patientId, callback, next){
+module.exports.getPatientTests = function(patientId, conditions, callback){
     mysql.getConnection(function(err, conn){
         if(err){
-            callback(err, {code:500, status:"Error in the connection to the database"})
-            return;
+            callback(err, {code:500, status: "Error in the connection to the database"});
+            return
         }
-        conn.query("select testId, testState, assignedDate, name as neuro, attribId, completedDate, comment from User inner join Neuropsi on neuro_userId = userId inner join Attribution on attrib_neuroId = neuroId inner join Test on test_attribId = attribId left outer join Result on testId = result_testId where attrib_fileId = ? order by assignedDate desc;",
-        [patientId], function(err, result){
-            conn.release();
+        var query = "select typeName from ExerType;"
+        conn.query(query, [], function(err, result){
             if(err){
-                callback(err, {code:500, status:"Error in a database query"});
-                return;
+                callback(err, {code:500, status:err})
+                return
             }
-            for(t of result){
-                t.assignedDate = convertDate(t.assignedDate);
-                t.completedDate = convertDate(t.completedDate);
-                if(!t.comment){
-                    t.comment = "-";
+            var exerTypes = result.map(type => type.typeName)
+
+            query = "select * from Test inner join Exercise on exer_testId = testId"
+            var values = [patientId]
+            for(type of exerTypes){
+                query+=" left join "+type+" on exerId = "+type.toLowerCase()+"_exerId" 
+            }
+            query += " inner join Evaluation on eval_testId = testId inner join Attribution on eval_attribId = attribId inner join File on attrib_fileId = fileId inner join ExerType_Attribution on attrib_exerId = exerId inner join ExerType on attrib_typeId = exerTypeId where fileId = ? " 
+            for(c in conditions){
+                query+="and "+c+" = ? "
+                values.push(conditions[c])
+            }
+            query += "order by exerId"
+            conn.query(query, values, function(err, result){
+                if (err){
+                    callback(err, {code:500, status: err});
+                    return;
                 }
-            }
-            callback(false, {code:200, status:"Ok", tests: result});
+                var tests = []
+                var firstDiffIdIndex = 0
+                for(i=0;i<result.length;i++){
+                    if((result[i+1] && result[i].testId != result[i+1].testId) || !result[i+1]){
+                        var slice = result.slice(firstDiffIdIndex,i+1)
+                        firstDiffIdIndex = i+1
+                        var test = sliceObject(slice[0], "testId", "exerId")
+                        test.exer = []
+                        var exer = sliceObject(slice[0], "exerId", "exer_testId")
+                        exer.params = []
+                        for(param of slice){
+                            if(exer.exerId != param.exerId){
+                                test.exer.push(exer)
+                                exer = sliceObject(param, "exerId", "exer_testId")
+                                exer.params = []
+                            }
+                            var p = sliceObject(param, param.typeName.toLowerCase()+"Id", param.typeName.toLowerCase()+"_exerId")
+                            p.type = param.typeName
+                            exer.params.push(p)
+                        }
+                        test.exer.push(exer)
+                        tests.push(test)
+                    }
+                }
+                callback(false, {code:200, status:"Ok", tests: tests});
+            })
         })
-    })
+    })  
 }
 
 function convertDate(date){
@@ -121,4 +156,8 @@ function convertDate(date){
     }else{
         return "-";
     } 
+}
+
+function sliceObject(obj, key1, key2){
+    return Object.keys(obj).slice(Object.keys(obj).indexOf(key1), Object.keys(obj).indexOf(key2)).reduce((a, c) => Object.assign(a, { [c]: obj[c] }), {})
 }
