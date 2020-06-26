@@ -4,7 +4,7 @@ var router = express.Router();
 var neuroDAO = require("../models/neuroDAO");
 
 router.get('/:neuroId/savedTests', function(req, res, next){
-    neuroDAO.getNeuroSavedTests(req.params.neuroId, function(err, result){
+    neuroDAO.getNeuroSavedTests(req.params.neuroId, req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);
@@ -27,7 +27,7 @@ router.post('/:neuroId/savedTests', function(req, res, next){
 });
 
 router.get('/:neuroId/patients', function(req, res, next){
-    neuroDAO.getNeuroPatients(req.params.neuroId, function(err, result){
+    neuroDAO.getNeuroPatients(req.params.neuroId, req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

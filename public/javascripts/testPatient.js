@@ -6,6 +6,58 @@ var coords;
 var test
 var params = []
 
+
+getDiff("../images/ReyOsterrieth-Complex-Figure.png", "../images/Rey-osterreith_example.jpg")
+
+function getDiff(url1, url2) {
+
+    var img1  = new Image()
+    var img2 = new Image()
+    img2.onload = function(){
+        base64Img1 = getBase64Image(img1)
+        base64Img2 = getBase64Image(img2)
+        $.ajax({
+            url:"/api/patients/images",
+            method:"post",
+            data: {img1:base64Img1, img2:base64Img2},
+            success: function(result, status){
+                console.log(result)
+                test.testId = result.testId
+                alert("Teste guardado com sucesso");
+            }
+        })
+    }
+    img1.src = url1
+    img1.onload = function(){
+        img2.src = url2
+    }
+    img1.src = url1
+
+    // The parameters can be Node Buffers
+    // data is the same as usual with an additional getBuffer() function
+}
+
+function getBase64Image(img) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    // Copy the image contents to the canvas
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    // Get the data-URL formatted image
+    // Firefox supports PNG and JPEG. You could check img.src to
+    // guess the original format, but be aware the using "image/jpg"
+    // will re-encode the image.
+    var dataURL = canvas.toDataURL("image/png");
+
+    return dataURL//.replace(/^data:image\/(png|jpg);base64,/, "");
+}
+
+  
+
 window.onresize = function(){
     context.canvas.width = document.getElementById("test").clientWidth
     context.canvas.height = document.getElementById("test").clientHeight
@@ -15,7 +67,7 @@ window.onload = function(){
     context.canvas.width = document.getElementById("test").clientWidth
     context.canvas.height = document.getElementById("test").clientHeight
     navigator.geolocation.getCurrentPosition(success, error);
-    getPatientTests(1,{testId:2}, loadPagination)
+    getPatientTests(patientId,{testId:testId})
 
 
 
@@ -97,7 +149,7 @@ function startRey(){
     }, 1000);
 }*/
 
-function getPatientTests(patientId, conditions, callback){
+function getPatientTests(patientId, conditions){
     var url = '/api/patients/'+patientId+'/tests'
     if(conditions){
         url+='?'
@@ -111,8 +163,7 @@ function getPatientTests(patientId, conditions, callback){
         method:'get',
         success:function(result){
             test = result.tests[0]
-            console.log(result)
-            callback(test)
+            loadPagination(test)
         }
     })
 }
@@ -140,24 +191,22 @@ function loadNextParam(){
     var pag = document.getElementsByClassName("active")[0]
     pag.classList.remove("active")
     var index = JSON.parse(pag.textContent)
-    console.log(index)
     pag = document.getElementById("pagination").children
-    console.log(pag)
 
     pag[index+1].classList.add("active")
 
     if(index == params.length){
         alert("Teste terminado")
+        endTest()
     }
     if(index > 1){
-        endTest(params[index-1])
+        saveParamResult(params[index-1])
     }
     loadParam(params[index])
 }
 
-function endTest(param){
-    console.log(param)
-    var str = "end"+param.type+"Test"
+function saveParamResult(param){
+    var str = "save"+param.type+"Result"
     window[str](param)
 }
 
@@ -166,6 +215,17 @@ function loadParam(param){
     var str = "load"+param.type+"Param"
     window[str](param) 
 
+}
+
+function endTest(){
+    $.ajax({
+        url: "/api/patients/"+patientId+"/tests/"+testId+"/results",
+        method: "post",
+        data: {test: test},
+        success: function(res, status){
+            alert("Teste submetido");
+        }
+    });
 }
 
 

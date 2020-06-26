@@ -25,6 +25,8 @@ function loadDigitsParam(param){
     
 }
 
-function endDigitsTest(param){
-    return
+const answerI = document.getElementsByTagName("input")[0]
+
+function saveDigitsResult(param){
+    param.result = {answer: JSON.parse(answerI.value)}
 }

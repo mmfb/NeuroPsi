@@ -20,7 +20,7 @@ window.onload = function(){
     })
     $.ajax({
         url: '/api/users/'+neuroId+'/tests/?patientId='+patientId,
-        mathod: 'get',
+        method: 'get',
         success: function(result, status){
             tests = result.tests;
             testsHtmlInjection(tests);

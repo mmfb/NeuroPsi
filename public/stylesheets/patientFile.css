@@ -1,69 +1,80 @@
-header {
-    width:70%;
+body::-webkit-scrollbar {
+    display: none;
+}
+main{
+    position: relative;
+    height: 86vh;
     display: grid;
-    grid-template-columns: 20% auto;
-    grid-column-gap: 5%;
-    border-radius: 10px;
-    background-color: #3b5998;
-    margin: auto;
-    margin-top: 6%;
+    margin: 10px;
+    grid-template-areas: 
+        'patientInfo patientEvals'
+        'patientEvolution testsInfo';
+    grid-gap: 10px;
+    grid-template-rows: 270px auto;
+    grid-template-columns: 50% 50%;
 }
-  
-header img {
-    width: 90%;
-    margin: auto;
-    padding: 5%;
-}
+#patientInfoSection{
+    color: black;
+    grid-area: patientInfo;
+    height: 100%;
 
-header section{
-    margin-top: auto;
-    margin-bottom: auto;
+    display: flex;
+    flex-flow: row wrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 0 20px;
 }
-
-header p {
-    vertical-align: middle;
-    font-size: large;
-    color: #f2f2f2;
+#patientEvalsSection{
+    overflow-y: scroll;
+    grid-area: patientEvals;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+    height: 100%;
 }
-
-table{
-    width: 90%;
+#testsInfoSection{
+    grid-area: testsInfo;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+    height: 100%;
+}
+#patientEvolutionSection{
+    grid-area: patientEvolution;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+    height: 100%;
+}
+.fixed_headers {
     text-align: center;
-    margin: 4% auto;
+    position: relative;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    color:black;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    font-size: 1.2vw;
 }
-
-thead{
-    background-color: #868a94;
+th, td {
+    padding: 5px 10px;
 }
-
-#testBtn{
-    width: 25px;
-    height: 25px;
-    padding: 3px;
-    vertical-align: middle;
+th {
+    background: #59A2BC;
+    position: sticky;
+    top: 0;
 }
-
-#theader{
-    background-color: #3b5998;
-    color: #f2f2f2;
+tr{
+    border: solid;
+    border-color: #707070;
+    border-width: 2px;
 }
-
-td img{
-    width:30px;
-    height:30px;
-    vertical-align: middle;
-}
-
-tbody td{
-    height:40px;
-    min-width:30px;
-}
-
-tbody tr:nth-child(even){
+table tr:nth-child(even){
     background-color: #eee;
 }
 
-tbody tr:nth-child(odd){
+table tr:nth-child(odd){
     background-color: #fff;
 }
 

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="stylesheets/navBars.css">
+        <link rel="stylesheet" href="stylesheets/patientFile.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdn.anychart.com/js/8.0.1/anychart-core.min.js"></script>
+        <script src="https://cdn.anychart.com/js/8.0.1/anychart-pie.min.js"></script>
+        <title>NeuroPsi</title>
+    </head>
+    <body>
+        <nav class="navBar">
+            <h1>NeuroPsi</h1>
+            <ul class="navBar-nav">
+                <li><a>Pacientes</a></li>
+                <li><a>Logout</a></li>
+                <li><a>Home</a></li>
+            </ul>
+        </nav>
+        <main>
+            <section id="patientInfoSection">
+                <img src="./images/user1.png" width="150px" height="150px">
+                <div id="patientInfo"></div>
+            </section>
+            
+            <section id="patientEvalsSection">
+                <table class="fixed_headers">
+                    <thead>
+                        <tr>
+                            <th>ID AVALIAÇÃO</th>
+                            <th>DATA MARCAÇÃO</th>
+                            <th>ESTADO</th>
+                            <th>DATA FINALIZAÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="evalsTableContent" class="tableRows">
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="testsInfoSection">
+            </section>
+
+            <section id="patientEvolutionSection">
+            </section>
+        </main>
+    </body>
+    <script src="javascripts/neuroPatientFile.js"></script>
+</html>

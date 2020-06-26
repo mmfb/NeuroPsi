@@ -48,42 +48,100 @@ module.exports.getUser = function(params, callback){
     })  
 }
 
-module.exports.getUserTests = function(userId, params, callback){
-    var queryParams = [userId]
-    var query = "select evalId, assignedDate, evalState, testId, creationDate, testTime, test_routeId, testType"+
-                " from User left join Patient on patient_userId = userId left join Neuropsi on neuro_userId = userId"+
-                " inner join Attribution on attrib_fileId = patientId or attrib_neuroId = neuroId"+
-                " inner join Evaluation on eval_attribId = attribId inner join Test on eval_testId = testId"+
-                " inner join (select attrib_testId, GROUP_CONCAT(typeName SEPARATOR ',') as testType"+
-                " from Test inner join TestType_Attribution on attrib_testId = testId inner join TestType on attrib_typeId = testTypeId"+
-                " group by testId) as type on testId = attrib_testId where userId = ?"
-    for(p in params){
-        query += " and "+p+"=?"
-        queryParams.push(params[p])
-    }
+
+module.exports.getUserEvals = function(user, id, filters, callback){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"});
             return
         }
-        conn.query(query, queryParams, function(err, result){
-            conn.release();
-            if (err){
-                callback(err, {code:500, status: "Error in a database query"});
-                return;
+        var query = "select typeName from ExerType;"
+        conn.query(query, [], function(err, result){
+            if(err){
+                callback(err, {code:500, status:err})
+                return
             }
-            for(t of result){
-                t.assignedDate = convertDate(t.assignedDate);
-                t.completedDate = convertDate(t.completedDate);
-                if(!t.comment){
-                    t.comment = "-";
+            var exerTypes = result.map(type => type.typeName)
+
+            query = "select * from Test left join Exercise on exer_testId = testId"
+            var values = [id]
+            for(type of exerTypes){
+                query+=" left join "+type+" on exerId = "+type.toLowerCase()+"_exerId left join "+type+"Result on "+type.toLowerCase()+"Result_"+type.toLowerCase()+"Id = "+type.toLowerCase()+"Id" 
+            }
+            query += " inner join Evaluation on eval_testId = testId"+ 
+                     " inner join Attribution on eval_attribId = attribId"+
+                     " inner join File on attrib_fileId = fileId"+
+                     " inner join Patient on file_patientId = patientId"+
+                     " inner join Neuropsi on neuroId = attrib_neuroId"+
+                     " inner join User on userId = "
+                     if(user == "neuro"){
+                         query += "patient_userId"
+                     }else{
+                         query += "neuro_userId"
+                     }
+            query += " left join ExerType_Attribution on attrib_exerId = exerId"+
+                     " left join ExerType on attrib_typeId = exerTypeId"+
+                     " where "+user+"Id = ? "  
+            for(f in filters){
+                query+="and "+f+" = ? "
+                values.push(filters[f])
+            }
+            query += "order by exerId;"
+            conn.query(query, values, function(err, result){
+                if (err){
+                    callback(err, {code:500, status: err});
+                    return;
                 }
-                t.testType = t.testType.split(',')
-            }
-            var tests = result
-            getTestsParams(conn, tests, callback)
+                var evals = []
+                var firstDiffIdIndex = 0
+                for(i=0;i<result.length;i++){
+                    if((result[i+1] && result[i].testId != result[i+1].testId) || !result[i+1]){
+                        var slice = result.slice(firstDiffIdIndex,i+1)
+                        firstDiffIdIndex = i+1
+                        var test = sliceObject(slice[0], "testId", "exerId")
+                        var eval = sliceObject(slice[0], "evalId", "eval_attribId")
+                        test = {...eval, ...test}
+                        test.creationDate = convertDate(test.creationDate)
+                        test.assignedDate = convertDate(test.assignedDate)
+                        test.completedDate = convertDate(test.completedDate)
+                        test.exer = []
+                        var exer = sliceObject(slice[0], "exerId", "exer_testId")
+                        exer.params = []
+                        for(param of slice){
+                            if(exer.exerId != param.exerId){
+                                test.exer.push(exer)
+                                exer = sliceObject(param, "exerId", "exer_testId")
+                                exer.params = []
+                            }
+                            if(param.typeName){
+                                var p = sliceObject(param, param.typeName.toLowerCase()+"Id", param.typeName.toLowerCase()+"_exerId")
+                                var result = sliceObject(param, param.typeName.toLowerCase()+"ResultId", param.typeName.toLowerCase()+"Result_"+param.typeName.toLowerCase()+"Id")
+                                p.result = result
+                                p.type = param.typeName
+                            }
+                            exer.params.push(p)
+                        }
+                        test.exer.push(exer)
+                        if(user == "neuro"){
+                            var patient = sliceObject(slice[0], "name", "user_locId")
+                            patient.patientId = slice[0].patientId
+                            test.patient = patient
+                        }else{
+                            var neuro = sliceObject(slice[0], "name", "user_locId")
+                            neuro.neuroId = slice[0].neuroId
+                            test.neuro = neuro
+                        }
+                        evals.push(test)
+                    }
+                }
+                callback(false, {code:200, status:"Ok", evals: evals});
+            })
         })
     })  
+}
+
+function sliceObject(obj, key1, key2){
+    return Object.keys(obj).slice(Object.keys(obj).indexOf(key1), Object.keys(obj).indexOf(key2)).reduce((a, c) => Object.assign(a, { [c]: obj[c] }), {})
 }
 
 function convertDate(date){

@@ -1,11 +1,12 @@
 var mysql = require('./mysqlConn').pool;
 
-module.exports.getNeuroSavedTests = function(neuroId, callback){
+module.exports.getNeuroSavedTests = function(neuroId, filters, callback){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"});
             return
         }
+        var values = [neuroId]
         var query = "select typeName from ExerType;"
         conn.query(query, [], function(err, result){
             if(err){
@@ -14,12 +15,17 @@ module.exports.getNeuroSavedTests = function(neuroId, callback){
             }
             var exerTypes = result.map(type => type.typeName)
 
-            query = "select * from Test inner join Exercise on exer_testId = testId"
+            query = "select * from Test left join Exercise on exer_testId = testId"
             for(type of exerTypes){
                 query+=" left join "+type+" on exerId = "+type.toLowerCase()+"_exerId" 
             }
-            query += " inner join SavedTest on savedTest_testId = testId inner join Neuropsi on neuroId = savedTest_neuroId inner join ExerType_Attribution on attrib_exerId = exerId inner join ExerType on attrib_typeId = exerTypeId where neuroId = ? order by exerId"
-            conn.query(query, [neuroId], function(err, result){
+            query += " inner join SavedTest on savedTest_testId = testId inner join Neuropsi on neuroId = savedTest_neuroId left join ExerType_Attribution on attrib_exerId = exerId left join ExerType on attrib_typeId = exerTypeId where neuroId = ?"
+            for(f in filters){
+                query+=" and "+f+"=?"
+                values.push(filters[f])
+            }
+            query += " order by exerId;"
+            conn.query(query, values, function(err, result){
                 if (err){
                     callback(err, {code:500, status: err});
                     return;
@@ -40,7 +46,9 @@ module.exports.getNeuroSavedTests = function(neuroId, callback){
                                 exer = sliceObject(param, "exerId", "exer_testId")
                                 exer.params = []
                             }
-                            exer.params.push(sliceObject(param, param.typeName.toLowerCase()+"Id", param.typeName.toLowerCase()+"_exerId"))
+                            if(param.typeName){
+                                exer.params.push(sliceObject(param, param.typeName.toLowerCase()+"Id", param.typeName.toLowerCase()+"_exerId"))
+                            }
                         }
                         test.exer.push(exer)
                         tests.push(test)
@@ -79,19 +87,19 @@ module.exports.saveTest = function(neuroId, test, callback){
             callback(err, {code:500, status:err})
             return;
         }
-        var query = "insert into Test (creationDate, testTime) values (?,?)"
-        conn.query(query, [new Date(), test.testTime], function(err, result){
+        var query = "insert into Test (creationDate, testTime, testTitle) values (?,?,?)"
+        conn.query(query, [new Date(), test.testTime, test.testTitle], function(err, result){
             if(err){
                 callback(err, {code:500, status:err})
                 return
             }
             var testId = result.insertId
-            insertExercisesRows(conn, test, testId, neuroId, callback)
+            insertExercisesRows(conn, test, testId, callback)
             insertSavedTestRows(conn, testId, neuroId, callback)
             if(test.hasOwnProperty("testId")){
                 saveExistingTest(conn, neuroId, test.testId, testId, callback)
             }
-            callback(false, {code:200, status:"Ok", testId: testId});
+            //callback(false, {code:200, status:"Ok", testId: testId});
         })
     })
 }
@@ -115,12 +123,14 @@ function insertExerTypeAttribRows(conn, type, exerId, callback){
 }
 
 function insertSavedTestRows(conn, testId, neuroId, callback){
+    console.log(neuroId)
     var query = "insert into SavedTest (savedTest_neuroId, savedTest_testId) values (?,?)"
     conn.query(query, [neuroId, testId], function(err, result){
         if(err){
             callback(err, {code:500, status:err})
             return
         }
+        callback(false, {code:200, status:"Ok", testId: testId});
     })
 }
 
@@ -148,9 +158,12 @@ function insertParamsRows(conn, exer, exerId, callback){
         var values = []
         var str = "("
         for(key in params){
-            query+=key+","
-            values.push(params[key])
-            str+="?,"
+            if(params[key]){
+                console.log(key+": "+params[key])
+                query+=key+","
+                values.push(params[key])
+                str+="?,"
+            }
         }
         query+=exer.type.toLowerCase()+"_exerId) values "
         values.push(exerId)
@@ -165,14 +178,19 @@ function insertParamsRows(conn, exer, exerId, callback){
     }
 }
 
-module.exports.getNeuroPatients = function(neuroId, callback, next){
+module.exports.getNeuroPatients = function(neuroId, filters, callback){
     mysql.getConnection(function(err, conn){
         if(err){
             callback(err, {code:500, status: "Error in the connection to the database"})
             return;
         }
-        conn.query("select userId, patientId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, user_locId, attribId from Location inner join User on user_locId = locId inner join Patient on patient_userId = userId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?;", 
-        [neuroId], function(err, result){
+        var query = "select userId, patientId, name, sex, email, birthdate, TIMESTAMPDIFF(YEAR, birthdate, CURRENT_DATE()) as age, attribId, locId from Location right join User on user_locId = locId inner join Patient on patient_userId = userId inner join File on file_patientId = patientId inner join Attribution on attrib_fileId = patientId where attrib_neuroId = ?"
+        var values = [neuroId]
+        for(f in filters){
+            query+=" and "+f+"=?"
+            values.push(filters[f])
+        }
+        conn.query(query, values, function(err, result){
             conn.release();
             if(err){
                 callback(err, {code:500, status: "Error in a database query"})

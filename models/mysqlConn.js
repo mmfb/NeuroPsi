@@ -1,11 +1,10 @@
 var mysql = require('mysql');
 var pool = mysql.createPool({
-    connectionLimit: 10,
+    connectionLimit: 60,
     host: 'remotemysql.com',
-    user: 'LfwsgKOzgL',
-    password: 'vL113Y7U5x',
-    database: 'LfwsgKOzgL'
-    //multipleStatements: true
+    user: 'iWt6KIcwKt',
+    password: 'plnWbvnRx7',
+    database: 'iWt6KIcwKt'
 });
 
 exports.pool = pool;

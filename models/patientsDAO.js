@@ -1,3 +1,5 @@
+const { param } = require('../routes/neurosRouts');
+
 var mysql = require('./mysqlConn').pool;
 
 module.exports.register = function(patients, callback, next){
@@ -160,4 +162,70 @@ function convertDate(date){
 
 function sliceObject(obj, key1, key2){
     return Object.keys(obj).slice(Object.keys(obj).indexOf(key1), Object.keys(obj).indexOf(key2)).reduce((a, c) => Object.assign(a, { [c]: obj[c] }), {})
+}
+
+
+module.exports.saveResults = function(patientId, test, callback){
+    mysql.getConnection(function(err, conn){
+        if(err){
+            callback(err, {code:500, status: "Error in the connection to the database"});
+            return
+        }
+        for(exer of test.exer){
+            for(param of exer.params){
+                if(exer.type == "Draw"){
+                    var score = 100 - getDiff(param.data)
+
+                    conn.query('insert into DrawResult (rec, score) values (?,?)', [param.rec, score], function(err, result){
+                        if(err){
+                            callback(err, {code:500, status:err})
+                            return
+                        }
+                    })
+                }else{
+                    var correctAnswer;
+                    if(param.answer == param.correctAnswer){
+                        correctAnswer = true;
+                    }else{
+                        correctAnswer = false
+                    }
+                    conn.query('insert into DigitsResult (answer, score) values (?,?)', [param.rec, score], function(err, result){
+                        if(err){
+                            callback(err, {code:500, status:err})
+                            return
+                        }
+                    })
+                }
+            }
+        }   
+    }) 
+}
+
+const compare = require("resemblejs").compare;
+
+function getDiff (data, callback){
+    const options = {
+        // stop comparing once determined to be > 5% non-matching; this will
+        // also enable compare-only mode and no output image will be rendered;
+        // the combination of these results in a significant speed-up in batch processing
+        returnEarlyThreshold: 5
+    };
+
+    // The parameters can be Node Buffers
+    // data is the same as usual with an additional getBuffer() function
+    compare(data.img1, data.img2, options, function(err, data) {
+        if (err) {
+            console.log("An error!");
+        } else {
+            return data.misMatchPercentage
+            /*
+            {
+            misMatchPercentage : 100, // %
+            isSameDimensions: true, // or false
+            dimensionDifference: { width: 0, height: -1 }, // defined if dimensions are not the same
+            getImageDataUrl: function(){}
+            }
+            */
+        }
+    });
 }

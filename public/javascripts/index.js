@@ -18,7 +18,7 @@ $("#loginBtn").click(function(){
                 }else if(result.user.neuroId != null){
                     sessionStorage.setItem("neuroId",result.user.neuroId);
                     sessionStorage.setItem("neuroCoords", JSON.stringify(result.user.coords))
-                    window.location = "patientsList.html";
+                    window.location = "neuroHomePage.html";
                 }
             }
         }

@@ -92,4 +92,15 @@ router.post('/:patientId/tests/:testId/routes', function(req, res, next){
     }, next);
 });
 
+router.post('/images', function(req, res, next){
+    patientsDAO.getDiff(req.body, function(err, result){
+        if(err){
+            res.statusMessage = result.status;
+            res.status(result.code).json(err);
+            return;
+        }
+        res.send({status: "Ok"});
+    }, next);
+});
+
 module.exports = router;

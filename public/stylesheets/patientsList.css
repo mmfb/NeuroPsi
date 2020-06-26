@@ -67,7 +67,7 @@ table tr:nth-child(odd){
 tbody tr:hover{
     background:rgb(86, 86, 87);
     color:#FFFFFF;
-    }
+}
 
 tbody tr{
     border-bottom: 1px solid #d7dbe0;

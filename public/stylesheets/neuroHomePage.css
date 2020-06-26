@@ -1,0 +1,207 @@
+body::-webkit-scrollbar {
+    display: none;
+}
+main{
+    position: relative;
+    height: 86vh;
+    display: grid;
+    margin: 10px;
+    grid-template-areas: 
+        'searchS searchS'
+        'evalListS patientsListS' 
+        'evalListS testInfoS';
+    grid-gap: 10px;
+    grid-template-rows: 70px calc(50% - 40px) calc(50% - 40px) auto;
+}
+#searchSection{
+    grid-area: searchS;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+    height: 100%;
+}
+#evalListSection{
+    grid-area: evalListS;
+    overflow-y: scroll;
+}
+#patientsListSection{
+    grid-area: patientsListS;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+    overflow-y: scroll;
+}
+#testInfoSection{
+    grid-area: testInfoS;
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+}
+.fixed_headers {
+    text-align: center;
+    position: relative;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+    color:black;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    font-size: 1.2vw;
+}
+th, td {
+    padding: 5px 10px;
+}
+th {
+    background: #59A2BC;
+    position: sticky;
+    top: 0;
+}
+tr{
+    border: solid;
+    border-color: #707070;
+    border-width: 2px;
+}
+table tr:nth-child(even){
+    background-color: #eee;
+}
+
+table tr:nth-child(odd){
+    background-color: #fff;
+}
+
+tbody tr:hover{
+    background:rgb(86, 86, 87);
+    color:#FFFFFF;
+}
+
+#testsSection{
+    position: relative;
+    width: 100%;
+    background-color: #cecece;
+    margin-bottom: 10px;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+.testsConteiner{
+    width: 90%;
+    margin: 40px;
+    text-align: center;
+    font-size: 30px;;
+}
+.testDivision{
+    padding: 20px;
+    color: #59A2BC;
+    border-bottom: 4px solid #707070;
+}
+.tests{
+    display: flex;
+    flex-flow: row wrap;
+    align-content: flex-start;
+    justify-content: space-evenly;
+    margin: 0 20px;
+}
+#searchSection{
+    display: flex;
+    flex-flow: row wrap;
+    align-content: center;
+}
+#searchSection form{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+#searchContainer{
+    margin-left: 15px;
+}
+#searchContainer img{
+    width:40px;
+    height:40px;
+}
+#searchContainer input{
+    height:20px;
+    margin-left: 10px;
+    width: 200px;
+}
+#pieChartContainer{
+    height: 100%;
+}
+.tableRows{
+    cursor: pointer;
+}
+.test{
+    width: 90px;
+    height: 110px;
+    border-style:solid;
+    border-color:#707070;
+    border-width:2px;
+    margin: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: 0.3s;
+    text-align: center;
+    cursor: pointer;
+}
+.testTitle{
+    font-size: 16px;
+}
+.dropdown_menu{
+    position: relative;
+    top: 65%;
+    margin-top: 2px;
+    left: 0;
+    width: 100%;
+    display: none;
+    animation: growDown 300ms ease-in-out forwards;
+    transform-origin: top center;
+}
+.dropdown_menu a img{
+    width: 40px;
+    height: 45px;
+    display: block;
+    margin: auto;
+    padding: 5px 0px;
+}
+.dropdown_menu a{
+    border-style:solid;
+    border-color:#707070;
+    border-width:1px;
+}
+#scheduleBtn{
+    background-color: cadetblue;
+    width: 47%;
+}
+#deleteBtn{
+    background-color: red;
+    width: 47%;
+}
+.test:hover{
+    width:120px;
+    height: 140px;
+    display: block;
+}
+.test:hover .dropdown_menu{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: stretch;
+}
+@keyframes growDown {
+    0% {
+      transform: scaleY(0)
+    }
+    80% {
+      transform: scaleY(1.1)
+    }
+    100% {
+      transform: scaleY(1)
+    }
+}
+#newTestBtn{
+    color: #59A2BC;
+    cursor: pointer;
+}
+#newTestBtn:hover{
+    color: #505050;
+}
+#titleConteiner{
+    width: 60%;
+    height: 50%;
+}

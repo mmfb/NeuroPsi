@@ -13,8 +13,8 @@ router.get('/', function(req, res, next){
     }, next);
 });
 
-router.get('/:userId/tests', function(req, res, next){
-    usersDAO.getUserTests(req.params.userId, req.query, function(err, result){
+router.get('/:user/:userId/evals', function(req, res, next){
+    usersDAO.getUserEvals(req.params.user, req.params.userId, req.query, function(err, result){
         if(err){
             res.statusMessage = result.status;
             res.status(result.code).json(err);

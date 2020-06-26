@@ -1,13 +1,4 @@
 
-$("#dropdownCheck").change(function(){
-    if(this.checked){
-        dropdownImgInjection("Desenhar esta figura")
-    }
-    else{
-        drawImageOnCanvas()
-    }
-})
-
 /*if(document.getElementById("dropdownCheck").checked){
     dropdownImgInjection("Desenhar esta figura")
 }
@@ -32,17 +23,6 @@ function dropdownImgInjection(text){
     img.src = src
 }
 
-function drawImageOnCanvas(){
-    var src = document.getElementById("imgPath").value;
-    var w = document.getElementById("imgW").value;
-    var h = document.getElementById("imgH").value;
-    var x = document.getElementById("imgX").value;
-    var y = document.getElementById("imgY").value;
-    document.getElementsByClassName("dropdownImg")[0].innerHTML="";
-    previewCtx.clearRect(0, 0, preview.width, preview.height);
-    loadImage(src,w,h,x,y);
-}
-
 function loadImage(src) {
     var img = new Image();
     img.onload = function(){
@@ -51,32 +31,27 @@ function loadImage(src) {
     img.src = src;
 }
 
-function loadDrawParams(elemId, param){
+function loadDrawParams(elemId, exer){
     var elem = document.getElementById(elemId).children[0]
     //elem.setAttribute('data-function', 'saveParamsInTest')
     str="<form id='paramForum' onSubmit='return false;'>"
             +"<p>Imagem</p>"
             +"<label>url: </label>"
             +"<input type='text' id='imgPath'><br>"
-            +"<label>Imagem dropdown: </label>"
-            +"<input type='checkbox' id='dropdownCheck'>"
             +"<p>Tamanho</p>"
             +"<label>altura: </label>"
             +"<input type='number' min='0' value='0' id='imgHeight'>"
             +"<label>largura: </label>"
             +"<input type='number' min='0' value='0' id='imgWidth'>"
-            +"<p>Posição</p>"
-            +"<label>x: </label>"
-            +"<input type='number' min='0' value='0' id='imgPosX'>"
-            +"<label>y: </label>"
-            +"<input type='number' min='0' value='0' id='imgPosY'>"
             +"<p>Tempo</p>"
             +"<input type='number' min='0' value='0' id='imgTime'>"
             +"<label>min</label>"
         +"</form>"
     elem.innerHTML=str;
-    if(param){
+    if(exer){
+        var param = exer.params[paramIndex]
         insertParamsFromTest(param)
+        dropdownImgInjection("Desenhar esta figura")
     }else{
         test.exer[exerIndex].type = "Draw"
         passParamsToExer("paramForum", exerIndex, paramIndex)

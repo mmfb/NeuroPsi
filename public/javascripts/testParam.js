@@ -2,10 +2,11 @@
 const canvas = document.getElementById("canvas");
 const canvasCtx = canvas.getContext('2d');
 const exersD = document.getElementById("exers")
-var test = {testTime:0, exer:[]}
 var exerIndex
 var paramIndex
-var neuroId = 1
+var test
+const neuroId = parseInt(sessionStorage.getItem("neuroId"));
+const testId = parseInt(sessionStorage.getItem("testId"));
 
 /*test = 
 {testTime: 80, exer:[
@@ -31,6 +32,32 @@ var neuroId = 1
         window["load"+exer.type+"InPreview"](param)
     }
 });*/
+
+if(testId < 0){
+    var test = {testTime:0, exer:[]}
+
+}else{
+    getNeuroSavedTests(neuroId, {testId: testId})
+}
+
+function getNeuroSavedTests(neuroId, filters){
+    var url = '/api/neuros/'+neuroId+'/savedTests'
+    if(filters){
+        url+='?'
+        for(f in filters){
+            url+=f+' = '+filters[f]+'&'
+        }
+        url = url.slice(0,-1);
+    }
+    $.ajax({
+        url: url,
+        method: 'get',
+        success: function(result, status){
+           test = result.tests[0];
+           loadParamsImgsOnElem(test, exersD)
+        }
+    })
+}
 
 document.getElementById("exerParam").addEventListener("keyup", function(event) {
     if (event.keyCode === 13) {
@@ -59,15 +86,16 @@ function convertExerInParam(){
 }
 
 function loadParams(exer){
+    document.getElementById("exerParam").children[0].innerHTML = "";
+    document.getElementById("preview").innerHTML = "";
     if("type" in exer){
         window["load"+exer.type+"Params"]("exerParam", exer)
         return
     }
-    document.getElementById("exerParam").children[0].innerHTML = "";
-    document.getElementById("preview").innerHTML = "";
 }
 
 function loadParamsImgsOnElem(test, elem){
+    console.log(test)
     str=""
     for(i=0; i<test.exer.length; i++){
         str+="<div class='exer' data-value='"+i+"'>"
@@ -97,7 +125,6 @@ function selectParam(elem, eIndex, pIndex){
 }
 
 function insertParamsFromTest(param){
-    console.log(param)
     for(key in param){
         document.getElementById(key).value = param[key]
     }
@@ -138,6 +165,7 @@ function getTestImgElem(testIndex){
 
 function saveTest(){
     //saveParamsInTest("testParam", testIndex)
+    test.testTitle = document.getElementById("testTitle").value;
     saveTestInDB(neuroId, test)
 }
 
@@ -154,7 +182,7 @@ function saveTestInDB(neuroId, test){
     })
 }
 
-function getNeuroSavedTests(neuroId){
+/*function getNeuroSavedTests(neuroId){
     $.ajax({
         url:"/api/neuros/"+neuroId+"/savedTests",
         method:"get",
@@ -162,7 +190,7 @@ function getNeuroSavedTests(neuroId){
             console.log(result.tests)
         }
     })
-}
+}*/
 
 var modal = document.getElementById("myModal");
 

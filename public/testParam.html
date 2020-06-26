@@ -28,7 +28,7 @@
                         <div class="dropdown">
                             <button class="dropbtn" style = "background-image: url('./images/brain.png');">Memória</button>
                             <div class="dropdown-content">
-                            <a onclick="loadDrawParams('exerParam')">Desenhar figura</a>
+                                <a onclick="loadDrawParams('exerParam')">Desenhar figura</a>
                             </div>
                         </div>
                     </li>
@@ -36,11 +36,15 @@
                         <div class="dropdown">
                             <button class="dropbtn" style = "background-image: url('./images/brain.png');">Atenção</button>
                             <div class="dropdown-content">
-                            <a onclick="loadDigitsParams('exerParam')">5 digits</a>
+                                <a onclick="loadDigitsParams('exerParam')">5 digits</a>
                             </div>
                         </div>
                     </li>
                 </ul>
+                <div id="testTitleContainer">
+                    <label>Nome do teste: </label>
+                    <input type="text" id="testTitle" width="100px">
+                </div>
             </section>
             <section id="testComp">
                 <div id="exers"></div>
